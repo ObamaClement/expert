@@ -1,0 +1,99 @@
+filename,cas_ids,type_examen,description
+img4surgical-neck-of-humerus-fracture-1 (1).jpg,4,Radio Épaule,Surgical neck humerus fracture
+img6cascliniqueIMGhemmoragiecerebracacIMG2.jpg,6,Scanner Cérébral,Intracerebral hemorrhage
+radiocongestiveCardiaque.jpg,7,Radio Thorax,Congestive heart failure
+img7frontal.jpg,7,Radio Thorax,Congestive heart failure (Frontal)
+img7lateral.jpg,7,Radio Thorax,Congestive heart failure (Lateral)
+img9frontal.jpeg,9,Radio Coude,Distal humerus fracture (Frontal)
+img9lateral.jpeg,9,Radio Coude,Distal humerus fracture (Lateral)
+img10axianonconstrast.jpg,10,Écho Thyroïde,Toxic multinodular goiter (Axial)
+img10conronalnoncontrast.jpg,10,Écho Thyroïde,Toxic multinodular goiter (Coronal)
+img11Longitunal1.jpg,11,Echo-Doppler,Carotid artery stenosis (Longitudinal 1)
+img11Longitunal2.jpg,11,Echo-Doppler,Carotid artery stenosis (Longitudinal 2)
+img11Results.jpg,11,Echo-Doppler,Carotid artery stenosis (Results)
+img13frontal.jpg,13,Radio,Orthopedic implant infection (Frontal)
+img13lateral.jpg,13,Radio,Orthopedic implant infection (Lateral)
+img14Chamber2CINE.jpg,14,Écho Cœur,Left ventricular hypertrophy (2 Chamber)
+img14Chamber4CINE.jpg,14,Écho Cœur,Left ventricular hypertrophy (4 Chamber)
+img17axialcplusArterialophase.jpeg,17,IRM Cérébrale,Brain metastasis (Axial Arterial)
+img17AxialNonContrast.jpeg,17,IRM Cérébrale,Brain metastasis (Axial Non-Contrast)
+img19AxialFlair.jpeg,19,IRM Cérébrale,Multiple brain metastases (Axial Flair)
+img19AxialT1.jpeg,19,IRM Cérébrale,Multiple brain metastases (Axial T1)
+img19T1Cplus.jpeg,19,IRM Cérébrale,Multiple brain metastases (T1 C+)
+img21CoronalCplusPortal.jpg,21,Écho Abdo,Liver cirrhosis
+img23.jpeg,23,Radio Thorax,Pulmonary edema
+img24*.jpeg,24,Scanner Cérébral,Skull base fracture
+img25frontal.jpg,25,Radio,Tuberculosis hip arthritis (Frontal)
+img25lateral.jpg,25,Radio,Tuberculosis hip arthritis (Lateral)
+img25Hltrasong2.jpeg,25,Écho,Tuberculosis hip arthritis (Ultrasound 2)
+img25UltraSong.jpeg,25,Écho,Tuberculosis hip arthritis (Ultrasound)
+right-hip-tuberculosis-septic-arthritis-and-osteomyelitis.jpg,25,Radio,Right hip tuberculosis (Overview)
+img26AxialCplusPortalVenous.jpg,26,Scanner Abdo,Liver trauma laceration
+img26CplusPortal_Venous.jpg,26,Scanner Abdo,Liver trauma laceration (Portal Venous)
+img28AxialContrast.jpeg,28,Coloscopie,Angiodysplasia colon (Axial Contrast)
+img28AxialCplusPhase.jpeg,28,Coloscopie,Angiodysplasia colon (Axial C+ Phase)
+img28CoronalCplusphase.jpeg,28,Coloscopie,Angiodysplasia colon (Coronal C+ Phase)
+img29.jpg,29,Radio Thorax,Lobar pneumonia
+img34.jpg,34,Scanner Cérébral,Spontaneous intracerebral hemorrhage
+img37coronalT1Plus.jpg,37,IRM Cérébrale,Pituitary adenoma MRI
+img39.jpg,39,Scanner Cérébral,Open skull fracture CT scan
+img40frontal.png,40,Scanner Thorax,Lung cancer mass (Frontal)
+img40lateral.png,40,Scanner Thorax,Lung cancer mass (Lateral)
+img43AxialDWI.jpg,43,IRM Cérébrale,Herpes simplex encephalitis MRI (Axial DWI)
+img43coronaT2.jpg,43,IRM Cérébrale,Herpes simplex encephalitis MRI (Coronal T2)
+img44.jpeg,"44,46,67",Radio Thorax,Cardiomegaly pulmonary congestion
+img48.jpeg,48,Radio Thorax,Right lower lobe pneumonia
+img49AxialCplusportalVenous.jpg,"49,71",Écho Abdo,Acute cholecystitis gallstones
+img50AxialCPlus.png,50,Gastroscopie,Duodenal ulcer (Axial C+)
+img50AxialNonContrast.png,50,Gastroscopie,Duodenal ulcer (Axial Non-Contrast)
+img50CoronalCPlusArterial.png,50,Gastroscopie,Duodenal ulcer (Coronal C+ Arterial)
+img52.jpeg,52,Radio Bassin,Femoral neck fracture
+img55sagittalBonneWindow.jpeg,55,Scanner Rachis,Cervical spine fracture
+img56AxialCPlus.jpeg,56,Scanner Abdo,Enterocutaneous fistula (Axial C+)
+img56CoronalCPlus.jpeg,56,Scanner Abdo,Enterocutaneous fistula (Coronal C+)
+img56SagitalCPlus.png,56,Scanner Abdo,Enterocutaneous fistula (Sagittal C+)
+img57.jpeg,57,Radio Thorax,Cavitary pulmonary tuberculosis
+img58.jpeg,"58,81,108",Radio Thorax,Pneumonia consolidation
+img59frontal.jpg,59,Radio Thorax,Left upper lobe pneumonia (Frontal)
+img59lateral.jpg,59,Radio Thorax,Left upper lobe pneumonia (Lateral)
+img60AxialNonContrast.png,60,Scanner/Écho,Cholangitis biliary dilation (Axial)
+img60CoronalNonContrast.png,60,Scanner/Écho,Cholangitis biliary dilation (Coronal)
+img62.jpeg,62,Scanner Cérébral,Subarachnoid hemorrhage
+img63.jpg,63,Radio Bassin,Pelvic fracture
+img64CoronaCPlus.jpg,64,Scanner Thorax,Mediastinal lymphadenopathy
+img69.jpeg,69,Transit,Tracheoesophageal fistula
+img76.jpeg,76,Radio Thorax,Ventilator associated pneumonia
+img89AxialCPlusPortal.jpg,89,Scanner/Photo,Gastrostomy tube leakage (Axial C+ Portal)
+img89AxialInject.jpg,89,Scanner/Photo,Gastrostomy tube leakage (Axial Inject)
+img92.jpg,92,Scanner Rachis,Jefferson fracture C1
+img93SLAX.png,"93,105",Écho Cœur,Dilated cardiomyopathy heart failure (SLAX)
+img93PSAXmitral.png,"93,105",Écho Cœur,Dilated cardiomyopathy heart failure (PSAX)
+img94.jpg,94,Scanner,Tracheal stenosis
+img99.jpeg,99,Radio Thorax,Miliary tuberculosis
+img100.jpg,100,Radio Thorax,COPD chest X-ray hyperinflation
+img101.jpg,101,Écho Abdo,Cirrhosis liver ultrasound
+img102frontal.jpeg,102,Photo/Radio,Finger laceration clinical photo (Frontal)
+img102lateral.jpeg,102,Photo/Radio,Finger laceration clinical photo (Lateral)
+img103frontal.jpg,103,Radio Thorax,Asthma hyperinflation (Frontal)
+img103lateral.jpg,103,Radio Thorax,Asthma hyperinflation (Lateral)
+img106.jpg,106,Angio-Scanner,Pulmonary embolism CT
+img119.jpg,119,Angio-Scanner,Saddle pulmonary embolism
+img107axialCPlus.jpg,107,Scanner,Esophageal cancer CT (Axial C+)
+img107Coronal.jpg,107,Scanner,Esophageal cancer CT (Coronal)
+img120.jpeg,120,Gastroscopie,Esophageal tumor endoscopy
+img120Radio.jpeg,120,Radio,Esophageal tumor (Radio)
+img109.jpeg,"109,122",Coronarographie,Coronary artery stenosis
+img110coronal.jpg,"110,115,123",Radio,Hip tuberculosis (Coronal)
+img110sagittal.jpg,"110,115,123",Radio,Hip tuberculosis (Sagittal)
+img111frontal.png,"111,124",Radio Thorax,Pleural effusion (Frontal)
+img111lateral.png,"111,124",Radio Thorax,Pleural effusion (Lateral)
+img112.jpeg,"112,125",Écho Cœur,Pericardial effusion
+img114AxialNonContrast.png,114,Scanner Cérébral,Subdural hematoma (Axial)
+img114CoronalNonContrast.jpg,114,Scanner Cérébral,Subdural hematoma (Coronal)
+img114SagitalNonContrast.png,114,Scanner Cérébral,Subdural hematoma (Sagittal)
+img117AxialNoncontrast.png,117,Angio-Scanner,Middle cerebral artery occlusion (Axial)
+img117CoronalNonContrast.png,117,Angio-Scanner,Middle cerebral artery occlusion (Coronal)
+img121.jpeg,121,Radio Thorax,Right middle lobe pneumonia
+img129.jpeg,128,ECG,Sinus node dysfunction
+CoronalCPlusVenous.jpg,89,Scanner,Gastrostomy tube leakage (Coronal)
+imgAxialLung.jpg,48,Radio Thorax,Pneumonia (Axial view example)
