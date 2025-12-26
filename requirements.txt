@@ -38,7 +38,7 @@ googleapis-common-protos==1.71.0
 greenlet==3.2.4
 griffe==1.14.0
 grpcio==1.76.0
-
+gunicorn
 
 h11==0.16.0
 hf-xet==1.2.0
