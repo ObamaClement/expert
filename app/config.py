@@ -6,7 +6,6 @@ class Settings(BaseSettings):
     Les variables sont chargées depuis le fichier .env.
     """
     DATABASE_URL: str
-    OPENAI_API_KEY:str
 
     class Config:
         env_file = ".env"
