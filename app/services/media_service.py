@@ -1,27 +1,47 @@
 import os
-import shutil
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from fastapi import UploadFile
+import cloudinary
+import cloudinary.uploader
 
 from .. import models, schemas
+from ..config import settings
 
-# Définir le chemin de base pour le stockage.
-# Plus tard, cela pourrait pointer vers un service cloud comme S3.
-STORAGE_PATH = "storage/media/images"
+# --- CONFIGURATION CLOUDINARY ---
+# Cette configuration est faite une seule fois au chargement du module.
+# Elle utilise les variables chargées depuis votre fichier .env.
+cloudinary.config(
+    cloud_name = settings.CLOUDINARY_CLOUD_NAME,
+    api_key = settings.CLOUDINARY_API_KEY,
+    api_secret = settings.CLOUDINARY_API_SECRET,
+    secure = True
+)
 
 
-async def save_upload_file(upload_file: UploadFile, destination: str) -> None:
+async def save_upload_file_to_cloud(upload_file: UploadFile) -> str:
     """
-    Fonction utilitaire pour sauvegarder un fichier uploadé sur le disque.
+    Fonction utilitaire pour uploader un fichier directement vers Cloudinary
+    et retourner son URL sécurisée.
     """
     try:
-        # Assurer que le dossier de destination existe
-        os.makedirs(os.path.dirname(destination), exist_ok=True)
-        with open(destination, "wb") as buffer:
-            # Lire le contenu du fichier par morceaux pour ne pas surcharger la mémoire
-            shutil.copyfileobj(upload_file.file, buffer)
+        # Lire le contenu du fichier en mémoire
+        content = await upload_file.read()
+        
+        # Envoyer le contenu à Cloudinary
+        upload_result = cloudinary.uploader.upload(
+            content,
+            folder="sti_medical_expert/uploads"  # Dossier de destination sur Cloudinary
+        )
+        
+        # Récupérer l'URL sécurisée (https://...)
+        secure_url = upload_result.get("secure_url")
+        if not secure_url:
+            raise Exception("Échec de l'upload vers Cloudinary, URL non retournée.")
+            
+        return secure_url
     finally:
+        # Toujours fermer le fichier après lecture
         await upload_file.close()
 
 
@@ -35,25 +55,21 @@ async def create_image_medicale(
 ) -> models.ImageMedicale:
     """
     Crée une nouvelle entrée pour une image médicale.
-    1. Sauvegarde le fichier sur le disque.
-    2. Crée l'enregistrement correspondant en base de données.
+    1. Sauvegarde le fichier sur Cloudinary.
+    2. Crée l'enregistrement correspondant en base de données avec l'URL cloud.
     """
-    # Définir le chemin de sauvegarde du fichier
-    file_path = os.path.join(STORAGE_PATH, file.filename)
-    
-    # Sauvegarder le fichier physique
-    await save_upload_file(file, file_path)
+    # 1. Sauvegarder le fichier physique sur le cloud
+    cloud_url = await save_upload_file_to_cloud(file)
 
-    # Créer l'objet SQLAlchemy avec les métadonnées
+    # 2. Créer l'objet SQLAlchemy avec les métadonnées et l'URL cloud
     db_image = models.ImageMedicale(
         type_examen=type_examen,
         sous_type=sous_type,
         pathologie_id=pathologie_id,
         description=description,
-        fichier_url=file_path, # Stocke le chemin d'accès
-        format_image=file.content_type,
+        fichier_url=cloud_url, # <-- C'est maintenant l'URL Cloudinary !
+        format_image=file.content_type.split('/')[-1] if file.content_type else None,
         taille_ko=file.size // 1024 if file.size else None,
-        # Les autres champs (embedding, etc.) seront remplis plus tard
     )
     
     db.add(db_image)
@@ -104,15 +120,15 @@ def delete_image_medicale(db: Session, image_id: int) -> Optional[models.ImageMe
     """
     Supprime une image médicale.
     1. Supprime l'enregistrement de la base de données.
-    2. Supprime le fichier physique du disque.
+    2. (Optionnel) Supprime le fichier sur Cloudinary.
     """
     db_image = get_image_medicale_by_id(db, image_id)
     if not db_image:
         return None
 
-    # Supprimer le fichier physique s'il existe
-    if db_image.fichier_url and os.path.exists(db_image.fichier_url):
-        os.remove(db_image.fichier_url)
+    # Optionnel : Ajouter ici la logique pour supprimer l'image de Cloudinary
+    # via cloudinary.uploader.destroy(...) si vous voulez un nettoyage complet.
+    # Pour l'instant, nous nous contentons de supprimer la référence.
 
     db.delete(db_image)
     db.commit()
