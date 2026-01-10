@@ -69,3 +69,4 @@ storage/
 logs/
 *.log
 alembic/versions/*
+all_py.txt
