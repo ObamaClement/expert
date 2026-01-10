@@ -66,7 +66,7 @@ class ClinicalCaseUpdate(BaseModel):
     images_associees_ids: Optional[List[int]] = None
     sons_associes_ids: Optional[List[int]] = None
     medicaments_prescrits: Optional[List[Dict[str, Any]]] = None
-    niveau_difficulte: Optional[int] = Field(None, ge=1, le=5)
+    niveau_difficulte: Optional[int] = Field(None, ge=1, le=100)
     duree_estimee_resolution_min: Optional[int] = None
     objectifs_apprentissage: Optional[List[str]] = None
     competences_requises: Optional[Dict[str, Any]] = None
