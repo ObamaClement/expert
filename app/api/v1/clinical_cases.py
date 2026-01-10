@@ -61,62 +61,59 @@ def read_clinical_case(case_id: int, db: Session = Depends(get_db)):
     """
     Récupère un cas clinique complet par son ID, avec tous les objets liés.
     """
+    # 1. Récupérer le cas brut
     db_case = clinical_case_service.get_case_by_id(db, case_id=case_id)
-    
     if db_case is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cas clinique non trouvé.")
+        raise HTTPException(status_code=404, detail="Cas clinique non trouvé.")
     
-    # --- LOGIQUE D'ENRICHISSEMENT ---
-    
-    # 1. Enrichir avec les objets images complets
-    images = []
-    if db_case.images_associees_ids:
-        for img_id in db_case.images_associees_ids:
-            img = media_service.get_image_medicale_by_id(db, image_id=img_id)
-            if img:
-                images.append(img)
-    
-    # 2. Enrichir avec les objets pathologies secondaires complets
+    # 2. Convertir en dictionnaire pour pouvoir injecter les champs enrichis
+    case_dict = db_case.__dict__
+
+    # 3. Enrichir : Pathologies Secondaires
     pathologies_secondaires = []
     if db_case.pathologies_secondaires_ids:
         for p_id in db_case.pathologies_secondaires_ids:
             p_obj = disease_service.get_disease_by_id(db, disease_id=p_id)
             if p_obj:
                 pathologies_secondaires.append(p_obj)
+    case_dict['pathologies_secondaires'] = pathologies_secondaires
 
-    # 3. Enrichir la présentation clinique avec les objets symptômes complets
+    # 4. Enrichir : Images
+    images = []
+    if db_case.images_associees_ids:
+        for img_id in db_case.images_associees_ids:
+            img = media_service.get_image_medicale_by_id(db, image_id=img_id)
+            if img:
+                images.append(img)
+    case_dict['images_associees'] = images
+
+    # 5. Enrichir : Présentation Clinique Détaillée
+    # Le champ 'presentation_clinique' en base contient juste des IDs.
+    # Nous devons aller chercher les objets Symptômes complets.
     symptomes_details_in_case = []
-    presentation_clinique_dict = db_case.presentation_clinique or {}
-    if 'symptomes_patient' in presentation_clinique_dict:
-        for sympt_in_case in presentation_clinique_dict['symptomes_patient']:
-            sympt_obj = symptom_service.get_symptom_by_id(db, symptom_id=sympt_in_case['symptome_id'])
+    presentation_dict = db_case.presentation_clinique or {}
+    
+    if 'symptomes_patient' in presentation_dict:
+        for item in presentation_dict['symptomes_patient']:
+            # item ressemble à {'symptome_id': 1, 'details': 'Fièvre forte'}
+            sympt_id = item.get('symptome_id')
+            sympt_obj = symptom_service.get_symptom_by_id(db, symptom_id=sympt_id)
+            
             if sympt_obj:
                 symptomes_details_in_case.append({
-                    "symptome": sympt_obj,
-                    "details": sympt_in_case.get('details', '')
+                    "symptome": sympt_obj, # L'objet complet
+                    "details": item.get('details', '')
                 })
     
-    presentation_clinique_detail = {
-        "histoire_maladie": presentation_clinique_dict.get('histoire_maladie', ''),
+    case_dict['presentation_clinique_detail'] = {
+        "histoire_maladie": presentation_dict.get('histoire_maladie', ''),
         "symptomes_patient": symptomes_details_in_case,
-        "antecedents": presentation_clinique_dict.get('antecedents')
+        "antecedents": presentation_dict.get('antecedents')
     }
 
-    # --- CONSTRUCTION DE LA RÉPONSE FINALE ---
-    
-    # Convertir l'objet SQLAlchemy de base en dictionnaire
-    case_dict = db_case.__dict__
-    
-    # Ajouter/Remplacer les champs enrichis
-    case_dict['images_associees'] = images
-    case_dict['pathologies_secondaires'] = pathologies_secondaires
-    case_dict['presentation_clinique_detail'] = presentation_clinique_detail
-    
-    # Valider le dictionnaire complet avec le schéma Pydantic pour une sérialisation correcte
-    validated_response = schemas.clinical_case.ClinicalCase.model_validate(case_dict, from_attributes=True)
-
-    return validated_response
-
+    # 6. Validation et Retour
+    # On passe le dictionnaire enrichi à Pydantic pour qu'il le valide et le formate
+    return schemas.clinical_case.ClinicalCase.model_validate(case_dict)
 
 @router.patch("/{case_id}", response_model=schemas.clinical_case.ClinicalCase)
 def update_clinical_case(case_id: int, case_data: schemas.clinical_case.ClinicalCaseUpdate, db: Session = Depends(get_db)):
