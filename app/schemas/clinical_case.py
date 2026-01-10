@@ -38,7 +38,7 @@ class ClinicalCaseBase(BaseModel):
     images_associees_ids: Optional[List[int]] = []
     sons_associes_ids: Optional[List[int]] = []
     medicaments_prescrits: Optional[List[Dict[str, Any]]] = []
-    niveau_difficulte: int = Field(default=3, ge=1, le=5)
+    niveau_difficulte: int = Field(default=3, ge=1, le=101)
     duree_estimee_resolution_min: Optional[int] = None
     objectifs_apprentissage: Optional[List[str]] = []
     competences_requises: Optional[Dict[str, Any]] = {}
