@@ -137,3 +137,28 @@ def delete_clinical_case(case_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cas clinique non trouvé.")
     # La conversion vers le schéma de réponse se fait automatiquement
     return db_case
+
+
+
+@router.get("/{case_id}/simple", response_model=schemas.clinical_case.ClinicalCaseSimple)
+def read_clinical_case_simple(case_id: int, db: Session = Depends(get_db)):
+    """
+    Récupère un cas clinique dans une structure simplifiée avec la pathologie principale complète.
+    Retourne exactement la même structure que ClinicalCaseSimple mais avec l'objet pathologie_principale complet.
+    """
+    # Récupérer le cas
+    db_case = clinical_case_service.get_case_by_id(db, case_id=case_id)
+    if db_case is None:
+        raise HTTPException(status_code=404, detail="Cas clinique non trouvé.")
+    
+    # Construire la réponse simple
+    case_simple = schemas.clinical_case.ClinicalCaseSimple(
+        id=db_case.id,
+        code_fultang=db_case.code_fultang,
+        niveau_difficulte=db_case.niveau_difficulte,
+        pathologie_principale=db_case.pathologie_principale,  # L'objet complet sera sérialisé
+        nb_images=len(db_case.images_associees_ids) if db_case.images_associees_ids else 0,
+        nb_sons=len(db_case.sons_associes_ids) if db_case.sons_associes_ids else 0,
+    )
+    
+    return case_simple

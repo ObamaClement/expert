@@ -60,9 +60,26 @@ class ClinicalCase(Base):
 
     valide_expert = Column(Boolean, default=False)
     
+
+    statut_publication = Column(
+        String(50), 
+        default="brouillon", 
+        nullable=False,
+        index=True,
+        comment="Statut du cas: brouillon, en_revision, valide, archive"
+    )
+    
+    # --- MISE À JOUR DU CHAMP EXISTANT ---
+    # On garde le lien vers l'expert qui valide
+    
+
     # Clé étrangère vers la table experts
     expert_validateur_id = Column(Integer, ForeignKey("experts.id"), nullable=True)
     
+
+    
+
+
     # Relation avec ExpertUser
     expert_validateur = relationship("ExpertUser", back_populates="cas_valides")
     date_validation = Column(Date)
