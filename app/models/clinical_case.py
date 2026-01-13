@@ -33,9 +33,6 @@ class ClinicalCase(Base):
 
     # --- Liaisons aux Connaissances de Base ---
     pathologie_principale_id = Column(Integer, ForeignKey("pathologies.id"), nullable=True, index=True)
-    # pathologie_secondaires_ids = Column(ARRAY(Integer), comment="Liste d'IDs de pathologies comorbides")
-
-
     pathologies_secondaires_ids = Column(ARRAY(Integer), comment="Liste d'IDs de pathologies comorbides ou secondaires")
 
     # --- Données du Scénario ---
@@ -49,7 +46,6 @@ class ClinicalCase(Base):
     sons_associes_ids = Column(ARRAY(Integer), comment="Liste des IDs des sons de la table 'sons_medicaux'")
 
     # --- Liaisons Thérapeutiques ---
-    # ordonnance_utilisee_id = Column(Integer, ForeignKey("ordonnances_types.id"), nullable=True)
     medicaments_prescrits = Column(JSON, comment="Liste des médicaments prescrits dans ce cas")
 
     # --- Métadonnées Pédagogiques ---
@@ -60,26 +56,9 @@ class ClinicalCase(Base):
 
     valide_expert = Column(Boolean, default=False)
     
-
-    statut_publication = Column(
-        String(50), 
-        default="brouillon", 
-        nullable=False,
-        index=True,
-        comment="Statut du cas: brouillon, en_revision, valide, archive"
-    )
-    
-    # --- MISE À JOUR DU CHAMP EXISTANT ---
-    # On garde le lien vers l'expert qui valide
-    
-
     # Clé étrangère vers la table experts
     expert_validateur_id = Column(Integer, ForeignKey("experts.id"), nullable=True)
     
-
-    
-
-
     # Relation avec ExpertUser
     expert_validateur = relationship("ExpertUser", back_populates="cas_valides")
     date_validation = Column(Date)
@@ -101,8 +80,6 @@ class ClinicalCase(Base):
 
     # --- Relations ---
     pathologie_principale = relationship("Disease")
-
-    
 
     def __repr__(self) -> str:
         return f"<ClinicalCase(id={self.id}, code='{self.code_fultang}')>"
