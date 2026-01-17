@@ -24,12 +24,14 @@ class SimulationSession(Base):
     learner = relationship("Learner", back_populates="sessions")
     cas_clinique = relationship("ClinicalCase")
     
-    # --- RELATION CRUCIALE ---
-    # Cette ligne permet d'accéder à session.messages pour obtenir tous les messages
+    # --- Relations ---
     messages = relationship("ChatMessage", back_populates="session", cascade="all, delete-orphan")
-    # -------------------------
+    tutor_decisions = relationship("TutorDecision", back_populates="session")
     
-    # ... (autres relations : logs, tutor_decisions...)
+    # --- RELATION VERS INTERACTION LOG MISE EN COMMENTAIRE ---
+    # Nous la réactiverons quand la table 'interaction_logs' sera créée.
+    # logs = relationship("InteractionLog", back_populates="session")
+    # ----------------------------------------------------
 
 class ChatMessage(Base):
     __tablename__ = "chat_messages"
@@ -40,9 +42,6 @@ class ChatMessage(Base):
     timestamp = Column(TIMESTAMP, server_default=text("now()"))
     sender = Column(String(50), nullable=False) # student, patient, tutor
     content = Column(Text, nullable=False)
-    message_metadata = Column(JSON) # anciennement 'metadata'
+    message_metadata = Column(JSON)
 
-    # --- RELATION CRUCIALE ---
-    # Cette ligne permet d'accéder à message.session pour retrouver la session parente
     session = relationship("SimulationSession", back_populates="messages")
-    # -------------------------
