@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, JSON, TIMESTAMP, Text, text, Boolean, BigInteger
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, JSON, TIMESTAMP, text, Boolean, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -14,65 +14,35 @@ class SimulationSession(Base):
     start_time = Column(TIMESTAMP, server_default=text("now()"))
     end_time = Column(TIMESTAMP)
     score_final = Column(Float)
-    temps_total = Column(Integer) # secondes
+    temps_total = Column(Integer)
     cout_virtuel_genere = Column(Integer)
-    statut = Column(String(50), default="en_cours") # en_cours, termine, abandonne
+    statut = Column(String(50), default="en_cours")
     raison_fin = Column(String(100))
-
-    # État courant du jeu (pour reprise)
-    current_stage = Column(String(50)) # anamnèse, examen...
-    context_state = Column(JSON) # État interne du patient virtuel
+    current_stage = Column(String(50))
+    context_state = Column(JSON)
 
     learner = relationship("Learner", back_populates="sessions")
     cas_clinique = relationship("ClinicalCase")
     
-    # Relations
-    logs = relationship("InteractionLog", back_populates="session")
-    messages = relationship("ChatMessage", back_populates="session")
-    tutor_decisions = relationship("TutorDecision", back_populates="session")
-
-
-class InteractionLog(Base):
-    __tablename__ = "interaction_logs"
-
-    id = Column(Integer, primary_key=True, index=True)
-    session_id = Column(UUID(as_uuid=True), ForeignKey("simulation_sessions.id"))
+    # --- RELATION CRUCIALE ---
+    # Cette ligne permet d'accéder à session.messages pour obtenir tous les messages
+    messages = relationship("ChatMessage", back_populates="session", cascade="all, delete-orphan")
+    # -------------------------
     
-    timestamp = Column(TIMESTAMP, server_default=text("now()"))
-    action_category = Column(String(50)) # Anamnèse, Examen...
-    action_type = Column(String(100)) # PoseQuestion, ClicImage
-    action_content = Column(JSON)
-    response_latency = Column(Integer) # ms
-    charge_cognitive_estimee = Column(Float)
-    est_pertinent = Column(Boolean)
-    
-    session = relationship("SimulationSession", back_populates="logs")
-
+    # ... (autres relations : logs, tutor_decisions...)
 
 class ChatMessage(Base):
     __tablename__ = "chat_messages"
 
     id = Column(Integer, primary_key=True, index=True)
-    session_id = Column(UUID(as_uuid=True), ForeignKey("simulation_sessions.id"))
+    session_id = Column(UUID(as_uuid=True), ForeignKey("simulation_sessions.id"), nullable=False)
     
     timestamp = Column(TIMESTAMP, server_default=text("now()"))
-    sender = Column(String(50)) # student, patient, tutor
-    content = Column(Text)
-    intention_detectee = Column(String(100))
-    sentiment_analyse = Column(String(50))
-    message_metadata = Column(JSON) # tokens, model used...
+    sender = Column(String(50), nullable=False) # student, patient, tutor
+    content = Column(Text, nullable=False)
+    message_metadata = Column(JSON) # anciennement 'metadata'
 
+    # --- RELATION CRUCIALE ---
+    # Cette ligne permet d'accéder à message.session pour retrouver la session parente
     session = relationship("SimulationSession", back_populates="messages")
-
-
-class LearnerAffectiveState(Base):
-    __tablename__ = "learner_affective_states"
-
-    id = Column(Integer, primary_key=True)
-    session_id = Column(UUID(as_uuid=True), ForeignKey("simulation_sessions.id"))
-    timestamp = Column(TIMESTAMP, server_default=text("now()"))
-    
-    stress_level = Column(Float) # 0-100
-    confidence_level = Column(Float)
-    motivation_level = Column(Float)
-    frustration_level = Column(Float)
+    # -------------------------
