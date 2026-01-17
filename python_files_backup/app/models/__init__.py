@@ -15,7 +15,7 @@ from .learner_models import (
     LearnerAchievement, LearnerStrategy
 )
 from .tracking_models import (
-    SimulationSession, ChatMessage, LearnerAffectiveState
+    SimulationSession, InteractionLog, ChatMessage, LearnerAffectiveState
 )
 from .tutor_models import (
     LearningPath, TutorDecision, TutorStrategiesHistory, 
