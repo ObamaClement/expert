@@ -5,3 +5,6 @@ from .medication import MedicationCreate,MedicationBase,MedicationUpdate, Medica
 from .media import ImageMedicaleBase,ImageMedicaleUpdate, ImageMedicale
 from .clinical_case import ClinicalCaseCreate,ClinicalCaseBase,ClinicalCaseUpdate, ClinicalCase
 from .expert_strategy import ExpertStrategyCreate,ExpertStrategyBase,ExpertStrategyUpdate, ExpertStrategy
+
+# === LIGNE À AJOUTER À LA FIN DU FICHIER ===
+from .chat_message import ChatMessage, ChatMessageCreate, ChatMessageBase
