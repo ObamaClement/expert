@@ -9,9 +9,11 @@ import random
 from .. import models, schemas
 from . import simulation_service, disease_service, interaction_log_service, ai_generation_service
 
+# Obtenir une instance du logger configuré dans main.py
 logger = logging.getLogger(__name__)
 
 def _get_learner_history(db: Session, learner_id: int, category: str) -> List[models.SimulationSession]:
+    """Récupère TOUT l'historique (en cours et terminé) pour une catégorie, le plus récent en premier."""
     logger.info(f"[_get_learner_history] Recherche de l'historique pour learner_id={learner_id}, category='{category}'")
     history = db.query(models.SimulationSession).join(
         models.ClinicalCase, models.SimulationSession.cas_clinique_id == models.ClinicalCase.id
@@ -22,9 +24,12 @@ def _get_learner_history(db: Session, learner_id: int, category: str) -> List[mo
         models.Disease.categorie == category
     ).order_by(desc(models.SimulationSession.start_time)).all()
     logger.info(f"  -> {len(history)} session(s) trouvée(s) au total.")
+    for i, s in enumerate(history):
+        logger.debug(f"    - Historique {i+1}: ID={s.id}, Statut='{s.statut}', Type='{s.context_state.get('session_type')}', Score={s.score_final}")
     return history
 
 def _select_case_for_activity(db: Session, category: str, session_type: str, last_score: Optional[float], seen_case_ids: List[int], learner_id: int, formative_cases_ids: List[int] = []) -> models.ClinicalCase:
+    """Sélectionne le cas clinique approprié en fonction de la logique pédagogique."""
     logger.info(f"[_select_case_for_activity] Début de la sélection. Type demandé: '{session_type}', dernier score: {last_score}")
     logger.info(f"  -> IDs des cas déjà vus à exclure: {seen_case_ids}")
 
@@ -35,7 +40,8 @@ def _select_case_for_activity(db: Session, category: str, session_type: str, las
         case_to_evaluate_id = random.choice(formative_cases_ids)
         logger.info(f"  -> Mode SOMMATIF: Sélection aléatoire du cas #{case_to_evaluate_id} parmi {formative_cases_ids}")
         next_case = db.query(models.ClinicalCase).filter(models.ClinicalCase.id == case_to_evaluate_id).first()
-        if not next_case: raise ValueError(f"Cas {case_to_evaluate_id} pour l'évaluation sommative introuvable.")
+        if not next_case:
+             raise ValueError(f"Cas {case_to_evaluate_id} pour l'évaluation sommative introuvable.")
         logger.info(f"    -> ✅ Cas sommatif trouvé: #{next_case.id}")
         return next_case
 
@@ -102,7 +108,7 @@ def start_new_session(db: Session, learner_id: int, category: str) -> Tuple[mode
         return last_session, last_session.cas_clinique, last_session.context_state.get("session_type")
 
     completed_history = [s for s in history if s.statut == "completed"]
-    seen_case_ids = [s.cas_clinique_id for s in history] # IDs de tous les cas déjà vus
+    seen_case_ids = [s.cas_clinique_id for s in history]
     
     session_type, last_score, formative_cases_ids = "test", None, []
 
@@ -114,6 +120,7 @@ def start_new_session(db: Session, learner_id: int, category: str) -> Tuple[mode
         if not last_eval:
              logger.info("  -> Logique: Sessions complétées mais aucune évaluation trouvée. On continue en 'formative'.")
              session_type, last_score = "formative", None
+             formative_since_last_eval = completed_history # Toutes sont formatives
         else:
             logger.info(f"  -> Logique: Dernière évaluation trouvée: Session ID {last_eval.id}, Score: {last_eval.score_final}")
             formative_since_last_eval = [s for s in completed_history if s.end_time > last_eval.end_time and s.context_state.get("session_type") == "formative"]
@@ -122,6 +129,7 @@ def start_new_session(db: Session, learner_id: int, category: str) -> Tuple[mode
             if last_eval.score_final < 12:
                  logger.info("  -> Logique: Échec à la dernière éval (<12). On recommence un cycle 'formative'.")
                  session_type, last_score = "formative", last_eval.score_final
+                 formative_since_last_eval = [] # Reset du cycle
             elif len(formative_since_last_eval) >= 3:
                 logger.info("  -> Logique: Cycle de 3 formatives terminé. Passage en 'sommative'.")
                 session_type, last_score = "sommative", last_eval.score_final
@@ -132,14 +140,11 @@ def start_new_session(db: Session, learner_id: int, category: str) -> Tuple[mode
                 
     next_clinical_case = _select_case_for_activity(db, category, session_type, last_score, seen_case_ids, learner_id, formative_cases_ids)
     
-    formative_count = 0
-    if session_type == 'formative':
-        if 'formative_since_last_eval' in locals() and last_eval and last_eval.score_final >= 12:
-            formative_count = len(formative_since_last_eval) + 1
-        else: # Recommence le cycle
-            formative_count = 1
+    formative_count = len(formative_since_last_eval) + 1 if 'formative_since_last_eval' in locals() and session_type == 'formative' else 1
     
-    new_session = simulation_service.create_session(db=db, learner_id=learner_id, case_id=next_clinical_case.id, session_type=session_type, formative_count=formative_count)
+    new_session = simulation_service.create_session(
+        db=db, learner_id=learner_id, case_id=next_clinical_case.id, session_type=session_type, formative_count=formative_count
+    )
     
     db.refresh(new_session, ["cas_clinique"])
     if new_session.cas_clinique: db.refresh(new_session.cas_clinique, ["pathologie_principale"])
@@ -147,39 +152,6 @@ def start_new_session(db: Session, learner_id: int, category: str) -> Tuple[mode
     logger.info(f"================ [END] start_new_session, nouvelle session: {new_session.id} ================\n")
     return new_session, new_session.cas_clinique, session_type
 
-def evaluate_submission(db: Session, session_id: UUID, submission_data: schemas.simulation.SubmissionRequest) -> Tuple[schemas.simulation.EvaluationResult, str, str]:
-    logger.info(f"[evaluate_submission] Début de l'évaluation pour la session {session_id}")
-    session = db.query(models.SimulationSession).options(joinedload(models.SimulationSession.cas_clinique).joinedload(models.ClinicalCase.pathologie_principale)).filter(models.SimulationSession.id == session_id).first()
-    if not session: raise ValueError(f"Session {session_id} non trouvée.")
-    if session.statut == "completed": raise ValueError("Cette session a déjà été évaluée.")
-
-    case = session.cas_clinique
-    logs = db.query(models.InteractionLog).filter(models.InteractionLog.session_id == session_id).all()
-    history_for_eval = [{"type": log.action_type, "name": log.action_content.get('name'), "justification": log.action_content.get('justification')} for log in logs]
-    
-    eval_result_raw, feedback, recommendation = ai_generation_service.evaluate_final_submission(db=db, case=case, submission=submission_data, session_history=history_for_eval)
-    
-    # CORRECTION DE L'ÉCHELLE DE NOTATION
-    score_total_ia = eval_result_raw.score_total
-    score_total_20 = (score_total_ia / 30) * 20 if score_total_ia is not None else 0.0
-    logger.info(f"  -> Score brut de l'IA: {score_total_ia}/30. Score normalisé: {score_total_20:.2f}/20.")
-    
-    eval_result_final = schemas.simulation.EvaluationResult(
-        score_diagnostic=eval_result_raw.score_diagnostic,
-        score_therapeutique=eval_result_raw.score_therapeutique,
-        score_demarche=eval_result_raw.score_demarche,
-        score_total=round(score_total_20, 2)
-    )
-
-    session.statut = "completed"
-    session.score_final = eval_result_final.score_total
-    session.end_time = datetime.now()
-    
-    db.commit()
-    logger.info(f"  -> Session {session_id} marquée comme 'completed' avec un score final de {session.score_final}.")
-    return eval_result_final, feedback, recommendation
-
-# ... Les autres fonctions (process_learner_action, provide_hint, etc.) restent inchangées ...
 def process_learner_action(db: Session, session_id: UUID, action_data: schemas.simulation.LearnerActionRequest) -> Tuple[Dict[str, Any], str]:
     interaction_log_service.create_interaction_log(db=db, session_id=session_id, action_data=action_data)
     
@@ -220,3 +192,44 @@ def provide_hint(db: Session, session_id: UUID) -> Tuple[str, str]:
     db.commit()
 
     return hint_type, hint_content
+
+def evaluate_submission(db: Session, session_id: UUID, submission_data: schemas.simulation.SubmissionRequest) -> Tuple[schemas.simulation.EvaluationResult, str, str]:
+    logger.info(f"[evaluate_submission] Début de l'évaluation pour la session {session_id}")
+    session = db.query(models.SimulationSession).options(
+        joinedload(models.SimulationSession.cas_clinique).joinedload(models.ClinicalCase.pathologie_principale)
+    ).filter(models.SimulationSession.id == session_id).first()
+    if not session: raise ValueError(f"Session {session_id} non trouvée.")
+    if session.statut == "completed": raise ValueError("Cette session a déjà été évaluée.")
+
+    case = session.cas_clinique
+    
+    logs = db.query(models.InteractionLog).filter(models.InteractionLog.session_id == session_id).all()
+    history_for_eval = [{"type": log.action_type, "name": log.action_content.get('name'), "justification": log.action_content.get('justification')} for log in logs]
+    
+    eval_result_raw, feedback, recommendation = ai_generation_service.evaluate_final_submission(
+        db=db, case=case, submission=submission_data, session_history=history_for_eval
+    )
+    
+    # Correction de l'échelle de notation
+    score_diag = eval_result_raw.get("score_diagnostic", 0.0)
+    score_ther = eval_result_raw.get("score_therapeutique", 0.0)
+    score_dem = eval_result_raw.get("score_demarche", 0.0)
+    score_total_30 = score_diag + score_ther + score_dem
+    score_total_20 = round((score_total_30 / 30) * 20, 2) if 30 > 0 else 0.0
+    logger.info(f"  -> Scores IA bruts: diag={score_diag}, ther={score_ther}, dem={score_dem}. Total/30={score_total_30}")
+    logger.info(f"  -> Score final normalisé: {score_total_20}/20")
+    
+    eval_result_final = schemas.simulation.EvaluationResult(
+        score_diagnostic=score_diag,
+        score_therapeutique=score_ther,
+        score_demarche=score_dem,
+        score_total=score_total_20
+    )
+
+    session.statut = "completed"
+    session.score_final = eval_result_final.score_total
+    session.end_time = datetime.now()
+    
+    db.commit()
+    logger.info(f"  -> Session {session_id} marquée comme 'completed' avec un score final de {session.score_final}.")
+    return eval_result_final, feedback, recommendation
