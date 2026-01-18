@@ -1,19 +1,21 @@
+import logging
 import requests
 import json
 from typing import Dict, Any, List, Tuple
-from sqlalchemy.orm import Session,joinedload
+from sqlalchemy.orm import Session, joinedload
 
 from .. import models, schemas
 from ..config import settings
+
+logger = logging.getLogger(__name__)
 
 # Constantes pour l'API OpenRouter
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODEL_NAME = "mistralai/devstral-2512:free"
 
 def _call_openrouter_api(prompt: str) -> Dict[str, Any]:
-    """
-    Fonction de base pour appeler l'API OpenRouter et parser la réponse JSON.
-    """
+    """Fonction de base pour appeler l'API OpenRouter et parser la réponse JSON."""
+    logger.info("Début de l'appel à l'API OpenRouter...")
     headers = {
         "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
@@ -25,24 +27,21 @@ def _call_openrouter_api(prompt: str) -> Dict[str, Any]:
     }
 
     try:
-        response = requests.post(OPENROUTER_API_URL, headers=headers, data=json.dumps(data), timeout=90) # Timeout augmenté
+        response = requests.post(OPENROUTER_API_URL, headers=headers, data=json.dumps(data), timeout=90)
         response.raise_for_status()
         response_json = response.json()
         content_str = response_json['choices'][0]['message']['content']
+        logger.info("Réponse de l'IA reçue et parsée avec succès.")
         return json.loads(content_str)
     except requests.exceptions.RequestException as e:
-        print(f"Erreur API OpenRouter: {e}")
+        logger.error(f"Erreur lors de l'appel à l'API OpenRouter: {e}")
         return {"error": "API call failed", "details": str(e)}
     except (json.JSONDecodeError, KeyError, IndexError) as e:
-        print(f"Erreur parsing réponse IA: {e}")
+        logger.error(f"Erreur lors du parsing de la réponse JSON de l'IA: {e}")
         return {"error": "Failed to parse AI response", "details": str(e)}
 
-# --- Fonctions spécialisées avec prompts IA ---
-
 def generate_exam_result(case: models.ClinicalCase, session_history: List[str], exam_name: str) -> Dict[str, Any]:
-    """
-    Génère un résultat d'examen plausible en utilisant l'IA.
-    """
+    """Génère un résultat d'examen plausible en utilisant l'IA."""
     prompt = f"""
     ROLE: Tu es un simulateur de laboratoire médical ultra-réaliste.
     CONTEXTE: Un étudiant en médecine interagit avec un cas clinique simulé. La pathologie réelle du patient est "{case.pathologie_principale.nom_fr}". L'histoire de la maladie est: "{case.presentation_clinique.get('histoire_maladie', 'Non spécifiée')}".
@@ -56,15 +55,11 @@ def generate_exam_result(case: models.ClinicalCase, session_history: List[str], 
     5. Le JSON doit avoir deux clés: "resultat" (une chaîne décrivant les observations brutes) et "conclusion" (une chaîne avec l'interprétation médicale concise).
     EXEMPLE DE SORTIE: {{"resultat": "Créatinine: 150 µmol/L (Norme: 60-110). Urée: 10 mmol/L (Norme: 2.5-7.5).", "conclusion": "Insuffisance rénale modérée."}}
     """
-    
     ai_response = _call_openrouter_api(prompt)
     return {"rapport": ai_response.get("resultat", "Erreur de génération du rapport."), "conclusion": ai_response.get("conclusion", "Aucune conclusion générée.")}
 
-
 def generate_hint(case: models.ClinicalCase, session_history: List[str], hint_level: int) -> Tuple[str, str]:
-    """
-    Génère un indice contextuel en utilisant l'IA.
-    """
+    """Génère un indice contextuel en utilisant l'IA."""
     if hint_level == 0: hint_type_instruction = "une question socratique ouverte pour orienter sa réflexion initiale sur l'anamnèse."
     elif hint_level == 1: hint_type_instruction = "un rappel de cours ou de méthode clinique pertinent par rapport aux informations déjà collectées."
     elif hint_level == 2: hint_type_instruction = "un indice direct sur une action clé à entreprendre (examen physique ou paraclinique) qu'il n'a pas encore faite."
@@ -78,22 +73,14 @@ def generate_hint(case: models.ClinicalCase, session_history: List[str], hint_le
     INSTRUCTIONS:
     1. L'indice doit être court, utile et ne jamais donner la solution.
     2. Adapte l'indice à ce que l'étudiant a déjà fait ou n'a pas fait.
-    3. Réponds UNIQUEMENT avec un objet JSON. Ne fournis aucun texte avant ou après le JSON.
-    4. Le JSON doit avoir deux clés: "hint_type" (choisis parmi: "question_socratique", "rappel_de_cours", "indice_direct", "indice_specifique") et "content" (le texte de l'indice).
-    EXEMPLE DE SORTIE: {{"hint_type": "question_socratique", "content": "Vous avez noté la tachycardie. Quelles pourraient être les causes principales de ce symptôme dans ce contexte ?"}}
+    3. Réponds UNIQUEMENT avec un objet JSON contenant les clés "hint_type" (choisis parmi: "question_socratique", "rappel_de_cours", "indice_direct", "indice_specifique") et "content".
     """
-    
     ai_response = _call_openrouter_api(prompt)
-    return ai_response.get("hint_type", "info"), ai_response.get("content", "Une erreur est survenue lors de la génération de l'indice.")
-
+    return ai_response.get("hint_type", "info"), ai_response.get("content", "Erreur lors de la génération de l'indice.")
 
 def evaluate_final_submission(db: Session, case: models.ClinicalCase, submission: schemas.simulation.SubmissionRequest, session_history: list) -> Tuple[schemas.simulation.EvaluationResult, str, str]:
-    """
-    Évalue la soumission finale de l'apprenant en utilisant l'IA.
-    """
-    # Enrichir les informations pour le prompt
+    """Évalue la soumission finale de l'apprenant en utilisant l'IA."""
     correct_pathology_name = case.pathologie_principale.nom_fr
-    
     db_pathology_submitted = db.query(models.Disease).filter(models.Disease.id == submission.diagnosed_pathology_id).first()
     submitted_pathology_name = db_pathology_submitted.nom_fr if db_pathology_submitted else f"ID Inconnu ({submission.diagnosed_pathology_id})"
     
@@ -118,21 +105,23 @@ def evaluate_final_submission(db: Session, case: models.ClinicalCase, submission
     - Historique de sa démarche (actions effectuées): {json.dumps(session_history, indent=2)}
 
     TA MISSION:
-    Évalue la performance de manière holistique et réponds UNIQUEMENT avec un objet JSON valide. Ne fournis aucune explication en dehors du JSON.
-    Le JSON doit contenir EXACTEMENT les clés suivantes:
-    1. "score_diagnostic": Une note flottante sur 10. Attribue 10 si le diagnostic est exact. Attribue une note partielle (5.0-7.0) si le diagnostic est cliniquement proche ou un bon différentiel. Attribue 0.0 pour un diagnostic sans rapport.
-    2. "score_therapeutique": Une note flottante sur 5. Évalue la pertinence du traitement proposé par l'étudiant PAR RAPPORT AU DIAGNOSTIC CORRECT (même s'il s'est trompé), pas par rapport à son propre diagnostic erroné. Note la présence de médicaments corrects et l'absence de médicaments dangereux.
-    3. "score_demarche": Une note flottante sur 5. Évalue la logique de l'étudiant à travers ses actions. A-t-il demandé les examens pertinents ? A-t-il ignoré des informations cruciales (comme une image disponible) ? Une démarche logique mais qui n'aboutit pas peut quand même avoir des points.
-    4. "feedback_global": Un paragraphe de 3-4 phrases. Commence par le point le plus positif. Ensuite, explique la principale erreur (diagnostique ou de démarche) de manière constructive. Termine par une phrase d'encouragement.
-    5. "recommendation_next_step": Une seule phrase courte et claire pour orienter l'étudiant. Choisis parmi: 'reprendre un cas de difficulté similaire', 'passer à un cas de difficulté supérieure', ou 'revoir les bases de cette catégorie'.
+    Évalue la performance et réponds UNIQUEMENT avec un objet JSON.
+    Le JSON doit contenir EXACTEMENT les clés suivantes avec des notes flottantes:
+    1. "score_diagnostic": note sur 10. (10 si exact, 5-7 si proche, 0 sinon).
+    2. "score_therapeutique": note sur 5. (Évalue la pertinence du traitement proposé PAR RAPPORT AU DIAGNOSTIC CORRECT).
+    3. "score_demarche": note sur 5. (Évalue la logique des examens demandés. Une démarche logique peut avoir des points même si le diagnostic final est faux).
+    4. "feedback_global": Un paragraphe de 3-4 phrases (point positif, axe d'amélioration, encouragement).
+    5. "recommendation_next_step": Une phrase courte (choisis parmi: 'reprendre un cas de difficulté similaire', 'passer à un cas de difficulté supérieure', 'revoir les bases de cette catégorie').
     """
     
     ai_response = _call_openrouter_api(prompt)
     
+    # Validation et calcul du score total sur 20
     try:
         score_diag = float(ai_response.get("score_diagnostic", 0.0))
         score_ther = float(ai_response.get("score_therapeutique", 0.0))
         score_dem = float(ai_response.get("score_demarche", 0.0))
+        # Le score total est maintenant la somme des scores /10, /5, /5 -> /20
         score_total = score_diag + score_ther + score_dem
     except (ValueError, TypeError):
         score_diag, score_ther, score_dem, score_total = 0.0, 0.0, 0.0, 0.0
@@ -141,7 +130,7 @@ def evaluate_final_submission(db: Session, case: models.ClinicalCase, submission
         score_diagnostic=score_diag,
         score_therapeutique=score_ther,
         score_demarche=score_dem,
-        score_total=score_total
+        score_total=round(score_total, 2)
     )
     
     feedback = ai_response.get("feedback_global", "Erreur lors de la génération du feedback.")
