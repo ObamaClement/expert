@@ -9,17 +9,21 @@ def create_session(
     learner_id: int, 
     case_id: int, 
     session_type: str,
-    formative_count: int = 0  # <--- PARAMÈTRE AJOUTÉ
+    formative_count: int = 0
 ) -> models.SimulationSession:
     """
     Crée un nouvel enregistrement de session de simulation dans la base de données.
     """
+    print(f"  [LOG simulation_service] Création d'une session:")
+    print(f"    -> learner_id: {learner_id}")
+    print(f"    -> case_id: {case_id}")
+    print(f"    -> session_type: '{session_type}'")
+    print(f"    -> formative_count_since_eval: {formative_count}")
+
     db_session = models.SimulationSession(
         learner_id=learner_id,
         cas_clinique_id=case_id,
         statut="in_progress",
-        # --- MODIFICATION ICI ---
-        # Le contexte stocke maintenant le type ET le compteur de sessions formatives.
         context_state={
             "session_type": session_type, 
             "formative_count_since_eval": formative_count,
@@ -30,7 +34,8 @@ def create_session(
     db.add(db_session)
     db.commit()
     db.refresh(db_session)
-
+    
+    print(f"    -> ✅ Session créée avec ID: {db_session.id}")
     return db_session
 
 
