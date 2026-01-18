@@ -3,8 +3,8 @@
   TEST COMPLET DES ROUTES DE SIMULATION STI MEDICAL
 ====================================================================================================
 URL: https://expert-cmck.onrender.com
-Date: 2026-01-18 17:16:02
-Fichier de sortie: test_simulation_20260118_171602.txt
+Date: 2026-01-18 17:45:11
+Fichier de sortie: test_simulation_20260118_174511.txt
 
 ====================================================================================================
   SCÉNARIO 1: CONSULTATION COMPLÈTE AVEC DIAGNOSTIC CORRECT
@@ -26,10 +26,10 @@ Description: Démarrer une session de simulation
 
 📥 RÉPONSE:
    Status Code: 201
-   Temps de réponse: 2.92s
+   Temps de réponse: 2.25s
    Données reçues:
 {
-      "session_id": "d2872930-55be-4969-8462-4c8a1addc04f",
+      "session_id": "e85147ec-7f85-4eed-8751-eb0c86294237",
       "session_type": "test",
       "clinical_case": {
             "code_fultang": "MIMIC_175237",
@@ -493,7 +493,7 @@ Description: Démarrer une session de simulation
       }
 }
 
-✅ SUCCÈS: Session créée avec ID: d2872930-55be-4969-8462-4c8a1addc04f, Type: test
+✅ SUCCÈS: Session créée avec ID: e85147ec-7f85-4eed-8751-eb0c86294237, Type: test
 
 📋 CAS CLINIQUE ASSIGNÉ:
    Code: MIMIC_175237
@@ -501,7 +501,7 @@ Description: Démarrer une session de simulation
    Pathologie: Urinary tract infection, site not specified
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #2: POST /api/v1/chat/sessions/d2872930-55be-4969-8462-4c8a1addc04f/messages
+TEST #2: POST /api/v1/chat/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/messages
 Description: Message 1: Échange de salutations
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -512,7 +512,7 @@ Description: Message 1: Échange de salutations
 ✅ SUCCÈS: Dialogue initial établi (Apprenant + Patient)
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #3: POST /api/v1/chat/sessions/d2872930-55be-4969-8462-4c8a1addc04f/messages
+TEST #3: POST /api/v1/chat/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/messages
 Description: Message 2: Motif de consultation
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -523,7 +523,7 @@ Description: Message 2: Motif de consultation
 ✅ SUCCÈS: Motif de consultation exprimé par le patient
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #4: POST /api/v1/chat/sessions/d2872930-55be-4969-8462-4c8a1addc04f/messages
+TEST #4: POST /api/v1/chat/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/messages
 Description: Message 3: Caractérisation des symptômes
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -536,13 +536,13 @@ ou quand j'urine. Le paracétamol que j'ai pris ne m'a pas vraiment soulagé.
 ✅ SUCCÈS: Anamnèse détaillée obtenue
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #5: POST /api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/actions
+TEST #5: POST /api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/actions
 Description: Action 1: Prise des paramètres vitaux
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 📤 REQUÊTE:
    Méthode: POST
-   URL: https://expert-cmck.onrender.com/api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/actions
+   URL: https://expert-cmck.onrender.com/api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/actions
    Données envoyées:
 {
       "action_type": "parametres_vitaux",
@@ -552,28 +552,28 @@ Description: Action 1: Prise des paramètres vitaux
 
 📥 RÉPONSE:
    Status Code: 200
-   Temps de réponse: 9.52s
+   Temps de réponse: 3.49s
    Données reçues:
 {
       "action_type": "parametres_vitaux",
       "action_name": "Prise des constantes",
       "result": {
-            "rapport": "Température: 38.5°C (Norme: 36.5-37.5). Fréquence cardiaque: 92 bpm (Norme: 60-100). Pression artérielle: 120/78 mmHg (Norme: <120/80). Fréquence respiratoire: 16 cycles/min (Norme: 12-20). Saturation en O2: 98% (Norme: 95-100).",
-            "conclusion": "Fièvre modérée et tachycardie légère, suggérant une réponse inflammatoire ou infectieuse. Les autres constantes sont dans les limites de la normale."
+            "rapport": "Température: 38.5°C, Pouls: 102 bpm, Pression artérielle: 130/85 mmHg, Fréquence respiratoire: 18 cpm, Saturation en O2: 98%.",
+            "conclusion": "Fièvre modérée et tachycardie légère, suggérant une réponse inflammatoire systémique. Les autres constantes sont dans les limites normales."
       },
       "feedback": null
 }
 
 🔬 RÉSULTATS:
 {
-      "rapport": "Température: 38.5°C (Norme: 36.5-37.5). Fréquence cardiaque: 92 bpm (Norme: 60-100). Pression artérielle: 120/78 mmHg (Norme: <120/80). Fréquence respiratoire: 16 cycles/min (Norme: 12-20). Saturation en O2: 98% (Norme: 95-100).",
-      "conclusion": "Fièvre modérée et tachycardie légère, suggérant une réponse inflammatoire ou infectieuse. Les autres constantes sont dans les limites de la normale."
+      "rapport": "Température: 38.5°C, Pouls: 102 bpm, Pression artérielle: 130/85 mmHg, Fréquence respiratoire: 18 cpm, Saturation en O2: 98%.",
+      "conclusion": "Fièvre modérée et tachycardie légère, suggérant une réponse inflammatoire systémique. Les autres constantes sont dans les limites normales."
 }
 
 ✅ SUCCÈS: Paramètres vitaux obtenus avec feedback
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #6: POST /api/v1/chat/sessions/d2872930-55be-4969-8462-4c8a1addc04f/messages
+TEST #6: POST /api/v1/chat/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/messages
 Description: Message 4: Antécédents médicaux
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -585,13 +585,13 @@ régulièrement, juste du paracétamol quand j'ai mal. Dans ma famille, il n'y a
 ✅ SUCCÈS: Antécédents médicaux collectés
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #7: POST /api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/actions
+TEST #7: POST /api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/actions
 Description: Action 2: Demande d'examen sanguin (NFS)
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 📤 REQUÊTE:
    Méthode: POST
-   URL: https://expert-cmck.onrender.com/api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/actions
+   URL: https://expert-cmck.onrender.com/api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/actions
    Données envoyées:
 {
       "action_type": "examen_complementaire",
@@ -601,13 +601,13 @@ Description: Action 2: Demande d'examen sanguin (NFS)
 
 📥 RÉPONSE:
    Status Code: 200
-   Temps de réponse: 3.73s
+   Temps de réponse: 4.07s
    Données reçues:
 {
       "action_type": "examen_complementaire",
       "action_name": "Numération Formule Sanguine (NFS)",
       "result": {
-            "rapport": "Leucocytes: 14.5 x 10^9/L (Norme: 4-10). Neutrophiles: 78% (Norme: 40-70). Hémoglobine: 13.2 g/dL (Norme: 12-16). Plaquettes: 250 x 10^9/L (Norme: 150-400).",
+            "rapport": "Leucocytes: 14.5 x10^9/L (Norme: 4-10). Neutrophiles: 78% (Norme: 40-70). Lymphocytes: 15% (Norme: 20-45). Hémoglobine: 13.2 g/dL (Norme: 12-16). Plaquettes: 250 x10^9/L (Norme: 150-400).",
             "conclusion": "Leucocytose avec neutrophilie, suggérant une réponse inflammatoire ou infectieuse. Pas d'anémie ni de thrombopénie."
       },
       "feedback": null
@@ -615,20 +615,20 @@ Description: Action 2: Demande d'examen sanguin (NFS)
 
 🔬 RÉSULTATS EXAMEN:
 {
-      "rapport": "Leucocytes: 14.5 x 10^9/L (Norme: 4-10). Neutrophiles: 78% (Norme: 40-70). Hémoglobine: 13.2 g/dL (Norme: 12-16). Plaquettes: 250 x 10^9/L (Norme: 150-400).",
+      "rapport": "Leucocytes: 14.5 x10^9/L (Norme: 4-10). Neutrophiles: 78% (Norme: 40-70). Lymphocytes: 15% (Norme: 20-45). Hémoglobine: 13.2 g/dL (Norme: 12-16). Plaquettes: 250 x10^9/L (Norme: 150-400).",
       "conclusion": "Leucocytose avec neutrophilie, suggérant une réponse inflammatoire ou infectieuse. Pas d'anémie ni de thrombopénie."
 }
 
 ✅ SUCCÈS: Résultats de NFS obtenus avec feedback
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #8: POST /api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/actions
+TEST #8: POST /api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/actions
 Description: Action 3: Demande d'examen inapproprié (IRM cérébrale)
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 📤 REQUÊTE:
    Méthode: POST
-   URL: https://expert-cmck.onrender.com/api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/actions
+   URL: https://expert-cmck.onrender.com/api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/actions
    Données envoyées:
 {
       "action_type": "examen_complementaire",
@@ -638,14 +638,14 @@ Description: Action 3: Demande d'examen inapproprié (IRM cérébrale)
 
 📥 RÉPONSE:
    Status Code: 200
-   Temps de réponse: 2.67s
+   Temps de réponse: 10.63s
    Données reçues:
 {
       "action_type": "examen_complementaire",
       "action_name": "IRM cérébrale",
       "result": {
-            "rapport": "Aucune anomalie cérébrale détectée. Pas de lésion, d'œdème, de masse ou de signe d'inflammation. Structures cérébrales normales.",
-            "conclusion": "IRM cérébrale sans particularité. Aucun signe en faveur d'une pathologie cérébrale aiguë ou chronique."
+            "rapport": "Aucune anomalie cérébrale détectée. Pas de lésion, d'œdème, de masse ou d'anomalie de la substance blanche ou grise. Les structures cérébrales sont normales.",
+            "conclusion": "IRM cérébrale sans particularité. Aucun signe d'atteinte du système nerveux central."
       },
       "feedback": null
 }
@@ -656,17 +656,17 @@ Description: Action 3: Demande d'examen inapproprié (IRM cérébrale)
 ✅ SUCCÈS: Feedback négatif reçu pour examen inapproprié
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #9: POST /api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/request-hint
+TEST #9: POST /api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/request-hint
 Description: Demande d'indice (type: simple)
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 📤 REQUÊTE:
    Méthode: POST
-   URL: https://expert-cmck.onrender.com/api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/request-hint
+   URL: https://expert-cmck.onrender.com/api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/request-hint
 
 📥 RÉPONSE:
    Status Code: 200
-   Temps de réponse: 1.73s
+   Temps de réponse: 1.89s
    Données reçues:
 {
       "hint_type": "question_socratique",
@@ -681,7 +681,7 @@ Description: Demande d'indice (type: simple)
 ℹ️  Aucune image disponible pour ce cas, test ignoré
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #10: POST /api/v1/chat/sessions/d2872930-55be-4969-8462-4c8a1addc04f/messages
+TEST #10: POST /api/v1/chat/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/messages
 Description: Message 5: Synthèse et confirmation
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -692,25 +692,25 @@ Description: Message 5: Synthèse et confirmation
 ✅ SUCCÈS: Synthèse validée par le patient - Prêt pour diagnostic
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #11: GET /api/v1/chat/sessions/d2872930-55be-4969-8462-4c8a1addc04f/messages
+TEST #11: GET /api/v1/chat/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/messages
 Description: Récupération de l'historique complet du chat
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 📤 REQUÊTE:
    Méthode: GET
-   URL: https://expert-cmck.onrender.com/api/v1/chat/sessions/d2872930-55be-4969-8462-4c8a1addc04f/messages
+   URL: https://expert-cmck.onrender.com/api/v1/chat/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/messages
 
 📥 RÉPONSE:
    Status Code: 200
-   Temps de réponse: 0.75s
+   Temps de réponse: 0.93s
    Type: Liste de 10 éléments
    Premier élément:
 {
       "sender": "Apprenant",
       "content": "Bonjour Monsieur/Madame, je suis l'étudiant en médecine qui va vous consulter aujourd'hui. Comment puis-je vous aider ?",
-      "id": 31,
-      "session_id": "d2872930-55be-4969-8462-4c8a1addc04f",
-      "timestamp": "2026-01-18T16:16:07.413823",
+      "id": 43,
+      "session_id": "e85147ec-7f85-4eed-8751-eb0c86294237",
+      "timestamp": "2026-01-18T16:45:15.496918",
       "message_metadata": {
             "message_type": "greeting",
             "consultation_phase": "accueil"
@@ -724,43 +724,43 @@ Description: Récupération de l'historique complet du chat
 
 📜 TRANSCRIPTION COMPLÈTE:
 
-   [1] 👨‍⚕️ Apprenant (2026-01-18T16:16:07.413823):
+   [1] 👨‍⚕️ Apprenant (2026-01-18T16:45:15.496918):
        Bonjour Monsieur/Madame, je suis l'étudiant en médecine qui va vous consulter aujourd'hui. Comment puis-je vous aider ?
 
-   [2] 🤒 Patient (2026-01-18T16:16:08.767900):
+   [2] 🤒 Patient (2026-01-18T16:45:16.746802):
        Bonjour docteur. Je ne me sens pas bien depuis quelques jours. Admission pour : FEVER;URINARY TRACT INFECTION
 
-   [3] 👨‍⚕️ Apprenant (2026-01-18T16:16:09.862604):
+   [3] 👨‍⚕️ Apprenant (2026-01-18T16:45:17.965898):
        Qu'est-ce qui vous amène aujourd'hui ? Pouvez-vous me décrire ce que vous ressentez ?
 
-   [4] 🤒 Patient (2026-01-18T16:16:11.100058):
+   [4] 🤒 Patient (2026-01-18T16:45:19.207431):
        Voilà, j'ai de la fièvre depuis 2-3 jours, autour de 38-39°C. Je me sens très fatigué et j'ai des douleurs. C'est pour ça que je suis venu vous consulter.
 
-   [5] 👨‍⚕️ Apprenant (2026-01-18T16:16:12.230825):
+   [5] 👨‍⚕️ Apprenant (2026-01-18T16:45:20.415465):
        Depuis quand avez-vous ces symptômes ? Est-ce que la douleur est constante ou intermittente ? Y a-t-il quelque chose qui l'aggrave ou la soulage ?
 
-   [6] 🤒 Patient (2026-01-18T16:16:13.499330):
+   [6] 🤒 Patient (2026-01-18T16:45:21.513403):
        Ça a commencé il y a 3 jours environ. Au début c'était juste une légère gêne, 
 mais depuis hier ça s'est aggravé. La douleur est plutôt constante, mais elle augmente quand je bouge 
 ou quand j'urine. ...
 
-   [7] 👨‍⚕️ Apprenant (2026-01-18T16:16:24.737876):
+   [7] 👨‍⚕️ Apprenant (2026-01-18T16:45:26.643077):
        Avez-vous des antécédents médicaux particuliers ? Prenez-vous des médicaments régulièrement ? Y a-t-il des maladies dans votre famille ?
 
-   [8] 🤒 Patient (2026-01-18T16:16:25.871663):
+   [8] 🤒 Patient (2026-01-18T16:45:27.863996):
        Non, je n'ai pas d'antécédents particuliers. Je ne prends pas de médicaments 
 régulièrement, juste du paracétamol quand j'ai mal. Dans ma famille, il n'y a rien de notable.
 
-   [9] 👨‍⚕️ Apprenant (2026-01-18T16:16:37.337604):
+   [9] 👨‍⚕️ Apprenant (2026-01-18T16:45:47.721956):
        D'accord, laissez-moi résumer. Vous présentez des symptômes depuis 3 jours, avec de la fièvre et des douleurs qui s'aggravent. Les examens montrent une inflammation. Je vais maintenant établir mon dia...
 
-   [10] 🤒 Patient (2026-01-18T16:16:38.424605):
+   [10] 🤒 Patient (2026-01-18T16:45:49.064926):
        Oui c'est exactement ça. J'espère que vous pourrez m'aider.
 
 ✅ SUCCÈS: Historique récupéré: 10 messages (conversation complète)
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #12: POST /api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/submit
+TEST #12: POST /api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/submit
 Description: Soumission du diagnostic final (correct)
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -770,7 +770,7 @@ Description: Soumission du diagnostic final (correct)
 
 📤 REQUÊTE:
    Méthode: POST
-   URL: https://expert-cmck.onrender.com/api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/submit
+   URL: https://expert-cmck.onrender.com/api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/submit
    Données envoyées:
 {
       "diagnosed_pathology_id": 21662,
@@ -782,14 +782,34 @@ Description: Soumission du diagnostic final (correct)
 }
 
 📥 RÉPONSE:
-   Status Code: 500
-   Temps de réponse: 8.36s
+   Status Code: 200
+   Temps de réponse: 4.72s
    Données reçues:
 {
-      "detail": "Erreur lors de l'évaluation de la soumission: (psycopg2.errors.DatatypeMismatch) column \"end_time\" is of type timestamp without time zone but expression is of type numeric\nLINE 1: UPDATE simulation_sessions SET end_time=1768753008.5245955, ...\n                                                ^\nHINT:  You will need to rewrite or cast the expression.\n\n[SQL: UPDATE simulation_sessions SET end_time=%(end_time)s, score_final=%(score_final)s, statut=%(statut)s WHERE simulation_sessions.id = %(simulation_sessions_id)s::UUID]\n[parameters: {'end_time': 1768753008.5245955, 'score_final': 14.0, 'statut': 'completed', 'simulation_sessions_id': UUID('d2872930-55be-4969-8462-4c8a1addc04f')}]\n(Background on this error at: https://sqlalche.me/e/20/f405)"
+      "evaluation": {
+            "score_diagnostic": 10.0,
+            "score_therapeutique": 1.0,
+            "score_demarche": 2.5,
+            "score_total": 13.5
+      },
+      "feedback_global": "Le diagnostic posé est exactement correct, ce qui est un excellent point. Cependant, les traitements proposés ne correspondent pas au diagnostic et certains examens complémentaires, comme l'IRM cérébrale, ne sont pas pertinents pour une infection urinaire. Il est important de toujours adapter les traitements et les examens au diagnostic posé. Continue à travailler sur la cohérence entre diagnostic et prise en charge pour progresser.",
+      "recommendation_next_step": "reprendre un cas de difficulté similaire"
 }
 
-❌ ÉCHEC: Code 500 attendu 200
+📊 ÉVALUATION FINALE:
+   🎯 Score Diagnostic:      [████████████████████] 10.0/10
+   💊 Score Thérapeutique:   [██░░░░░░░░░░░░░░░░░░] 1.0/10
+   🩺 Score Démarche:        [█████░░░░░░░░░░░░░░░] 2.5/10
+
+   ⭐ SCORE TOTAL: 13.5/30
+
+📝 FEEDBACK GLOBAL:
+   Le diagnostic posé est exactement correct, ce qui est un excellent point. Cependant, les traitements proposés ne correspondent pas au diagnostic et certains examens complémentaires, comme l'IRM cérébrale, ne sont pas pertinents pour une infection urinaire. Il est important de toujours adapter les traitements et les examens au diagnostic posé. Continue à travailler sur la cohérence entre diagnostic et prise en charge pour progresser.
+
+🎯 RECOMMANDATION:
+   reprendre un cas de difficulté similaire
+
+✅ SUCCÈS: ⚠️  Diagnostic soumis mais score faible: 13.5/30
 
 ====================================================================================================
   SCÉNARIO 2: SESSION AVEC DIAGNOSTIC INCORRECT
@@ -800,16 +820,16 @@ TEST #13: POST /api/v1/simulation/sessions/start
 Description: Nouvelle session pour test diagnostic incorrect
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
-✅ SUCCÈS: Session créée: 34b83ec7-9f38-4407-a7e8-5597286b8567
+✅ SUCCÈS: Session créée: 78dccbd8-f3c4-430c-9719-cfe347ab2ee0
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #14: POST /api/v1/simulation/sessions/34b83ec7-9f38-4407-a7e8-5597286b8567/submit
+TEST #14: POST /api/v1/simulation/sessions/78dccbd8-f3c4-430c-9719-cfe347ab2ee0/submit
 Description: Soumission d'un diagnostic INCORRECT
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 📤 REQUÊTE:
    Méthode: POST
-   URL: https://expert-cmck.onrender.com/api/v1/simulation/sessions/34b83ec7-9f38-4407-a7e8-5597286b8567/submit
+   URL: https://expert-cmck.onrender.com/api/v1/simulation/sessions/78dccbd8-f3c4-430c-9719-cfe347ab2ee0/submit
    Données envoyées:
 {
       "diagnosed_pathology_id": 19743,
@@ -817,43 +837,56 @@ Description: Soumission d'un diagnostic INCORRECT
 }
 
 📥 RÉPONSE:
-   Status Code: 500
-   Temps de réponse: 32.27s
+   Status Code: 200
+   Temps de réponse: 3.80s
    Données reçues:
 {
-      "detail": "Erreur lors de l'évaluation de la soumission: (psycopg2.errors.DatatypeMismatch) column \"end_time\" is of type timestamp without time zone but expression is of type numeric\nLINE 1: UPDATE simulation_sessions SET end_time=1768753045.009291, s...\n                                                ^\nHINT:  You will need to rewrite or cast the expression.\n\n[SQL: UPDATE simulation_sessions SET end_time=%(end_time)s, score_final=%(score_final)s, statut=%(statut)s WHERE simulation_sessions.id = %(simulation_sessions_id)s::UUID]\n[parameters: {'end_time': 1768753045.009291, 'score_final': 0.0, 'statut': 'completed', 'simulation_sessions_id': UUID('34b83ec7-9f38-4407-a7e8-5597286b8567')}]\n(Background on this error at: https://sqlalche.me/e/20/f405)"
+      "evaluation": {
+            "score_diagnostic": 0.0,
+            "score_therapeutique": 0.0,
+            "score_demarche": 0.0,
+            "score_total": 0.0
+      },
+      "feedback_global": "Votre démarche montre une absence totale d'actions ou de raisonnement, ce qui est préoccupant. Le diagnostic proposé est sans rapport avec le cas clinique, indiquant une méconnaissance des signes cliniques d'un infarctus sous-endocardique. Il est essentiel de revoir les bases de l'évaluation des douleurs thoraciques et des syndromes coronariens aigus. Ne vous découragez pas, car chaque erreur est une opportunité d'apprentissage.",
+      "recommendation_next_step": "revoir les bases de cette catégorie"
 }
 
-❌ ÉCHEC: Code 500 attendu 200
+📊 ÉVALUATION (DIAGNOSTIC INCORRECT):
+   Score Diagnostic: 0.0/10
+   Score Thérapeutique: 0.0/10
+   Score Démarche: 0.0/10
+   SCORE TOTAL: 0.0/30
+
+✅ SUCCÈS: Diagnostic incorrect détecté avec feedback approprié
 
 ====================================================================================================
   TEST DES DIFFÉRENTS TYPES D'INDICES
 ====================================================================================================
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #15: POST /api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/request-hint
+TEST #15: POST /api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/request-hint
 Description: Demande d'indice #1
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 💡 INDICE #1:
    Type: question_socratique
-   Contenu: Quels examens complémentaires seraient spécifiques pour confirmer ou infirmer une infection urinaire, en tenant compte des actions déjà réalisées ?...
+   Contenu: Vous avez réalisé une NFS et une IRM cérébrale. Quels examens complémentaires seraient plus spécifiques pour explorer une infection urinaire ?...
 
 ✅ SUCCÈS: Indice #1 reçu
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #16: POST /api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/request-hint
+TEST #16: POST /api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/request-hint
 Description: Demande d'indice #2
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 💡 INDICE #2:
    Type: indice_direct
-   Contenu: Avez-vous pensé à réaliser un examen des urines pour confirmer l'infection ?...
+   Contenu: Avez-vous pensé à réaliser un examen spécifique des voies urinaires pour confirmer l'infection ?...
 
 ✅ SUCCÈS: Indice #2 reçu
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #17: POST /api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/request-hint
+TEST #17: POST /api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/request-hint
 Description: Demande d'indice #3
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -886,14 +919,14 @@ Description: Test avec session_id invalide
 ✅ SUCCÈS: Erreur 404 correctement retournée pour session invalide
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #20: POST /api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/actions
+TEST #20: POST /api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/actions
 Description: Test action sans justification
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 ❌ ÉCHEC: Exception: 'NoneType' object is not subscriptable
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-TEST #21: POST /api/v1/simulation/sessions/d2872930-55be-4969-8462-4c8a1addc04f/submit
+TEST #21: POST /api/v1/simulation/sessions/e85147ec-7f85-4eed-8751-eb0c86294237/submit
 Description: Test soumission sans pathologie
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -903,6 +936,6 @@ Description: Test soumission sans pathologie
   RÉSUMÉ DES TESTS DE SIMULATION
 ====================================================================================================
 Total de tests: 21
-Succès: 17
-Échecs: 4
-Taux de réussite: 81.0%
+Succès: 19
+Échecs: 2
+Taux de réussite: 90.5%
