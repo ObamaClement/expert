@@ -162,7 +162,7 @@ def evaluate_submission(db: Session, session_id: UUID, submission_data: schemas.
     
     session.statut = "completed"
     session.score_final = eval_result.score_total
-    session.end_time = datetime.time()
+    session.end_time = datetime.now()
     
     # Mettre à jour les compétences de l'apprenant si c'est une évaluation sommative ou de test
     session_type = session.context_state.get("session_type")
