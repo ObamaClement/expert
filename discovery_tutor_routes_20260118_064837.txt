@@ -1,0 +1,185 @@
+====================================================================================================
+DÉCOUVERTE DES ROUTES API TUTEUR - 2026-01-18 06:48:37
+====================================================================================================
+
+URL de base: https://tutor-docker-sti.onrender.com
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+RÉSULTATS DES TESTS
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+GET /
+Description: Racine de l'API
+Status: 404
+Response: Not Found
+
+Time: 0.90s
+
+GET /docs
+Description: Documentation Swagger
+Status: 404
+Response: Not Found
+
+Time: 0.63s
+
+GET /openapi.json
+Description: OpenAPI spec
+Status: 404
+Response: Not Found
+
+Time: 0.65s
+
+GET /api/v1
+Description: Base API v1
+Status: 404
+Response: Not Found
+
+Time: 0.62s
+
+GET /api/v1/docs
+Description: Docs API v1
+Status: 404
+Response: Not Found
+
+Time: 0.92s
+
+GET /api/v1/openapi.json
+Description: OpenAPI v1
+Status: 404
+Response: Not Found
+
+Time: 0.63s
+
+POST /api/v1/decide
+Description: Decide endpoint
+Status: 404
+Response: Not Found
+
+Time: 1.09s
+
+POST /api/v1/session/start
+Description: Start session
+Status: 404
+Response: Not Found
+
+Time: 0.94s
+
+POST /api/v1/hint
+Description: Request hint
+Status: 404
+Response: Not Found
+
+Time: 0.66s
+
+POST /api/v1/answer
+Description: Submit answer
+Status: 404
+Response: Not Found
+
+Time: 0.66s
+
+POST /api/v1/case/end
+Description: End case
+Status: 404
+Response: Not Found
+
+Time: 0.62s
+
+POST /api/v1/case/next
+Description: Get next case
+Status: 404
+Response: Not Found
+
+Time: 0.64s
+
+GET /api/v1/session/1/1038
+Description: Get session info
+Status: 404
+Response: Not Found
+
+Time: 0.61s
+
+GET /api/v1/sessions/learner/1
+Description: Get learner sessions
+Status: 404
+Response: Not Found
+
+Time: 0.62s
+
+GET /health
+Description: Health check
+Status: 404
+Response: Not Found
+
+Time: 0.62s
+
+GET /api/health
+Description: API Health check
+Status: 404
+Response: Not Found
+
+Time: 0.61s
+
+GET /api/v1/health
+Description: API v1 Health
+Status: 404
+Response: Not Found
+
+Time: 0.61s
+
+GET /tutor
+Description: Tutor endpoint
+Status: 404
+Response: Not Found
+
+Time: 0.81s
+
+GET /api/tutor
+Description: API Tutor
+Status: 404
+Response: Not Found
+
+Time: 0.66s
+
+GET /api/v1/tutor
+Description: API v1 Tutor
+Status: 404
+Response: Not Found
+
+Time: 0.63s
+
+====================================================================================================
+RÉSUMÉ
+====================================================================================================
+
+📊 Statistiques:
+   • Endpoints testés: 20
+   • Disponibles: 0
+   • Non trouvés (404): 20
+   • Erreurs: 0
+
+
+🔍 Test détaillé de la racine:
+
+Racine (https://tutor-docker-sti.onrender.com):
+Status: 404
+Headers: {'Date': 'Sun, 18 Jan 2026 05:48:52 GMT', 'Content-Type': 'text/plain; charset=utf-8', 'Content-Length': '10', 'Connection': 'keep-alive', 'CF-RAY': '9bfbce48ef934af5-LHR', 'x-content-type-options': 'nosniff', 'x-render-routing': 'no-server', 'cf-cache-status': 'DYNAMIC', 'Server': 'cloudflare', 'alt-svc': 'h3=":443"; ma=86400'}
+Response:
+Not Found
+
+
+💡 RECOMMANDATIONS:
+
+1. Si /docs ou /openapi.json est disponible, consultez la documentation Swagger
+2. Vérifiez que l'API Tuteur est bien déployée sur Render
+3. Les routes peuvent avoir un préfixe différent (ex: /tutor/api/v1/...)
+4. L'API peut nécessiter une authentification (API Key, JWT)
+5. Contactez l'équipe de développement pour confirmer les routes exactes
+
+
+====================================================================================================
+Rapport complet sauvegardé dans: discovery_tutor_routes_20260118_064837.txt
+Date fin: 2026-01-18 06:48:52
+====================================================================================================

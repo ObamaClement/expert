@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .api.v1 import symptoms,diseases,medications,media,clinical_cases,expert_strategies,diagnostic,chat
+from .api.v1 import symptoms,diseases,medications,media,clinical_cases,expert_strategies,diagnostic,chat,simulation
 
 app = FastAPI(
     title="STI Medical Expert Module",
@@ -17,6 +17,7 @@ app.include_router(expert_strategies.router, prefix="/api/v1")
 app.include_router(diagnostic.router, prefix="/api/v1")
 
 app.include_router(chat.router, prefix="/api/v1")
+app.include_router(simulation.router, prefix="/api/v1")
 
 
 @app.get("/")

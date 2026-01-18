@@ -1,0 +1,199 @@
+================================================================================
+RAPPORT: PATHOLOGIES AVEC IMAGES ASSOCIÉES
+Date: 2026-01-18 01:15:08
+================================================================================
+
+📊 STATISTIQUES GLOBALES
+--------------------------------------------------------------------------------
+Total d'images: 99
+Images avec pathologie associée: 1
+Images sans pathologie: 98
+Total de pathologies: 14568
+Pathologies avec images: 1
+Total de cas cliniques: 100
+Cas cliniques avec images: 0
+
+
+📋 DÉTAILS DES PATHOLOGIES AVEC IMAGES (1)
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+#1 - PATHOLOGIE ID: 29854
+────────────────────────────────────────────────────────────────────────────────
+Nom (FR): Méningite Test API
+Nom (EN): Meningitis Test
+Code ICD-10: G03.9
+Catégorie: Infectiologie
+Niveau de gravité: 4
+
+🖼️  IMAGES ASSOCIÉES: 1
+
+   Image #1:
+      ID: 296
+      Type examen: Radiographie
+      Sous-type: Thorax
+      Description: Image de test API
+      Format: png
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768675305/sti_medical_expert/uploads/zwefonk7gwc6omtrrjak.png
+      Validé expert: False
+
+
+📋 IMAGES SANS PATHOLOGIE ASSOCIÉE (98)
+================================================================================
+
+   Image #1:
+      ID: 198
+      Type examen: Radio Épaule
+      Sous-type: None
+      Description: Surgical neck humerus fracture
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051528/sti_medical_expert/radiology/img_198_img4surgical-neck-of-humerus-fracture-1%20%281%29.jpg
+
+   Image #2:
+      ID: 199
+      Type examen: Scanner Cérébral
+      Sous-type: None
+      Description: Intracerebral hemorrhage
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051529/sti_medical_expert/radiology/img_199_img6cascliniqueIMGhemmoragiecerebracacIMG2.jpg
+
+   Image #3:
+      ID: 200
+      Type examen: Radio Thorax
+      Sous-type: None
+      Description: Congestive heart failure
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051529/sti_medical_expert/radiology/img_200_radiocongestiveCardiaque.jpg
+
+   Image #4:
+      ID: 201
+      Type examen: Radio Thorax
+      Sous-type: None
+      Description: Congestive heart failure (Frontal)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051530/sti_medical_expert/radiology/img_201_img7frontal.jpg
+
+   Image #5:
+      ID: 202
+      Type examen: Radio Thorax
+      Sous-type: None
+      Description: Congestive heart failure (Lateral)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051532/sti_medical_expert/radiology/img_202_img7lateral.jpg
+
+   Image #6:
+      ID: 203
+      Type examen: Radio Coude
+      Sous-type: None
+      Description: Distal humerus fracture (Frontal)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051533/sti_medical_expert/radiology/img_203_img9frontal.jpg
+
+   Image #7:
+      ID: 204
+      Type examen: Radio Coude
+      Sous-type: None
+      Description: Distal humerus fracture (Lateral)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051534/sti_medical_expert/radiology/img_204_img9lateral.jpg
+
+   Image #8:
+      ID: 205
+      Type examen: Écho Thyroïde
+      Sous-type: None
+      Description: Toxic multinodular goiter (Axial)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051535/sti_medical_expert/radiology/img_205_img10axianonconstrast.jpg
+
+   Image #9:
+      ID: 206
+      Type examen: Écho Thyroïde
+      Sous-type: None
+      Description: Toxic multinodular goiter (Coronal)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051536/sti_medical_expert/radiology/img_206_img10conronalnoncontrast.jpg
+
+   Image #10:
+      ID: 207
+      Type examen: Echo-Doppler
+      Sous-type: None
+      Description: Carotid artery stenosis (Longitudinal 1)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051537/sti_medical_expert/radiology/img_207_img11Longitunal1.jpg
+
+   Image #11:
+      ID: 208
+      Type examen: Echo-Doppler
+      Sous-type: None
+      Description: Carotid artery stenosis (Longitudinal 2)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051539/sti_medical_expert/radiology/img_208_img11Longitunal2.jpg
+
+   Image #12:
+      ID: 209
+      Type examen: Echo-Doppler
+      Sous-type: None
+      Description: Carotid artery stenosis (Results)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051539/sti_medical_expert/radiology/img_209_img11Results.jpg
+
+   Image #13:
+      ID: 210
+      Type examen: Radio
+      Sous-type: None
+      Description: Orthopedic implant infection (Frontal)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051540/sti_medical_expert/radiology/img_210_img13frontal.jpg
+
+   Image #14:
+      ID: 211
+      Type examen: Radio
+      Sous-type: None
+      Description: Orthopedic implant infection (Lateral)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051541/sti_medical_expert/radiology/img_211_img13lateral.jpg
+
+   Image #15:
+      ID: 212
+      Type examen: Écho Cœur
+      Sous-type: None
+      Description: Left ventricular hypertrophy (2 Chamber)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051542/sti_medical_expert/radiology/img_212_img14Chamber2CINE.jpg
+
+   Image #16:
+      ID: 213
+      Type examen: Écho Cœur
+      Sous-type: None
+      Description: Left ventricular hypertrophy (4 Chamber)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051544/sti_medical_expert/radiology/img_213_img14Chamber4CINE.jpg
+
+   Image #17:
+      ID: 214
+      Type examen: IRM Cérébrale
+      Sous-type: None
+      Description: Brain metastasis (Axial Arterial)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051545/sti_medical_expert/radiology/img_214_img17axialcplusArterialophase.jpg
+
+   Image #18:
+      ID: 215
+      Type examen: IRM Cérébrale
+      Sous-type: None
+      Description: Brain metastasis (Axial Non-Contrast)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051546/sti_medical_expert/radiology/img_215_img17AxialNonContrast.jpg
+
+   Image #19:
+      ID: 216
+      Type examen: IRM Cérébrale
+      Sous-type: None
+      Description: Multiple brain metastases (Axial Flair)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051547/sti_medical_expert/radiology/img_216_img19AxialFlair.jpg
+
+   Image #20:
+      ID: 217
+      Type examen: IRM Cérébrale
+      Sous-type: None
+      Description: Multiple brain metastases (Axial T1)
+      URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051547/sti_medical_expert/radiology/img_217_img19AxialT1.jpg
+
+   ... et 78 autres images
+
+
+📋 CAS CLINIQUES AVEC IMAGES (0)
+================================================================================
+
+⚠️  Aucun cas clinique n'a d'image associée
+
+
+================================================================================
+RÉSUMÉ
+================================================================================
+✓ 1 pathologies ont des images
+✓ 1 images associées à des pathologies
+✓ 98 images sans pathologie
+✓ 0 cas cliniques avec images

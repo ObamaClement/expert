@@ -1,0 +1,608 @@
+====================================================================================================
+RAPPORT D'ASSOCIATION: CAS CLINIQUES → PATHOLOGIES → IMAGES
+Date: 2026-01-18 01:25:04
+====================================================================================================
+
+📊 STATISTIQUES GLOBALES
+----------------------------------------------------------------------------------------------------
+Total cas cliniques: 100
+Cas avec pathologie principale: 100
+Pathologies uniques dans les cas: 63
+Cas sans images: 100
+Total d'images: 99
+Images non assignées: 98
+Associations trouvées/proposées: 59
+
+
+====================================================================================================
+SECTION 1: ASSOCIATIONS EXISTANTES (0)
+====================================================================================================
+
+⚠️  Aucune association existante trouvée
+
+
+====================================================================================================
+SECTION 2: IMAGES LIÉES À LA PATHOLOGIE (À ASSOCIER) (0)
+====================================================================================================
+
+⚠️  Aucune image directement liée aux pathologies des cas
+
+
+====================================================================================================
+SECTION 3: PROPOSITIONS D'ASSOCIATIONS (59)
+====================================================================================================
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1041 (MIMIC_199207)
+Pathologie: Closed fracture of surgical neck of humerus
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #1:
+   → Image #198: Radio Épaule - None
+   → Description: Surgical neck humerus fracture
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051528/sti_medical_expert/radiology/img_198_img4surgical-neck-of-humerus-fracture-1%20%281%29.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+   Proposition #2:
+   → Image #203: Radio Coude - None
+   → Description: Distal humerus fracture (Frontal)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051533/sti_medical_expert/radiology/img_203_img9frontal.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #3:
+   → Image #204: Radio Coude - None
+   → Description: Distal humerus fracture (Lateral)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051534/sti_medical_expert/radiology/img_204_img9lateral.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1043 (MIMIC_103770)
+Pathologie: Intracerebral hemorrhage
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #4:
+   → Image #199: Scanner Cérébral - None
+   → Description: Intracerebral hemorrhage
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051529/sti_medical_expert/radiology/img_199_img6cascliniqueIMGhemmoragiecerebracacIMG2.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+   Proposition #5:
+   → Image #233: Scanner Cérébral - None
+   → Description: Spontaneous intracerebral hemorrhage
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051563/sti_medical_expert/radiology/img_233_img34.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1044 (MIMIC_199395)
+Pathologie: Congestive heart failure, unspecified
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #6:
+   → Image #200: Radio Thorax - None
+   → Description: Congestive heart failure
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051529/sti_medical_expert/radiology/img_200_radiocongestiveCardiaque.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+   Proposition #7:
+   → Image #201: Radio Thorax - None
+   → Description: Congestive heart failure (Frontal)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051530/sti_medical_expert/radiology/img_201_img7frontal.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #8:
+   → Image #202: Radio Thorax - None
+   → Description: Congestive heart failure (Lateral)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051532/sti_medical_expert/radiology/img_202_img7lateral.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1046 (MIMIC_140372)
+Pathologie: Other closed fracture of lower end of humerus
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #9:
+   → Image #198: Radio Épaule - None
+   → Description: Surgical neck humerus fracture
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051528/sti_medical_expert/radiology/img_198_img4surgical-neck-of-humerus-fracture-1%20%281%29.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #10:
+   → Image #203: Radio Coude - None
+   → Description: Distal humerus fracture (Frontal)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051533/sti_medical_expert/radiology/img_203_img9frontal.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #11:
+   → Image #204: Radio Coude - None
+   → Description: Distal humerus fracture (Lateral)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051534/sti_medical_expert/radiology/img_204_img9lateral.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1047 (MIMIC_157235)
+Pathologie: Toxic multinodular goiter without mention of thyrotoxic crisis or storm
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #12:
+   → Image #205: Écho Thyroïde - None
+   → Description: Toxic multinodular goiter (Axial)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051535/sti_medical_expert/radiology/img_205_img10axianonconstrast.jpg
+   💡 SCORE: 30/100 (Correspondance suggérée)
+
+   Proposition #13:
+   → Image #206: Écho Thyroïde - None
+   → Description: Toxic multinodular goiter (Coronal)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051536/sti_medical_expert/radiology/img_206_img10conronalnoncontrast.jpg
+   💡 SCORE: 30/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1048 (MIMIC_110244)
+Pathologie: Occlusion and stenosis of carotid artery without mention of cerebral infarction
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #14:
+   → Image #207: Echo-Doppler - None
+   → Description: Carotid artery stenosis (Longitudinal 1)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051537/sti_medical_expert/radiology/img_207_img11Longitunal1.jpg
+   💡 SCORE: 30/100 (Correspondance suggérée)
+
+   Proposition #15:
+   → Image #208: Echo-Doppler - None
+   → Description: Carotid artery stenosis (Longitudinal 2)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051539/sti_medical_expert/radiology/img_208_img11Longitunal2.jpg
+   💡 SCORE: 30/100 (Correspondance suggérée)
+
+   Proposition #16:
+   → Image #209: Echo-Doppler - None
+   → Description: Carotid artery stenosis (Results)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051539/sti_medical_expert/radiology/img_209_img11Results.jpg
+   💡 SCORE: 30/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1050 (MIMIC_111115)
+Pathologie: Infection and inflammatory reaction due to other internal orthopedic device, implant, and graft
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #17:
+   → Image #210: Radio - None
+   → Description: Orthopedic implant infection (Frontal)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051540/sti_medical_expert/radiology/img_210_img13frontal.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #18:
+   → Image #211: Radio - None
+   → Description: Orthopedic implant infection (Lateral)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051541/sti_medical_expert/radiology/img_211_img13lateral.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1051 (MIMIC_157839)
+Pathologie: Unspecified hypertensive heart disease with heart failure
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #19:
+   → Image #200: Radio Thorax - None
+   → Description: Congestive heart failure
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051529/sti_medical_expert/radiology/img_200_radiocongestiveCardiaque.jpg
+   💡 SCORE: 30/100 (Correspondance suggérée)
+
+   Proposition #20:
+   → Image #201: Radio Thorax - None
+   → Description: Congestive heart failure (Frontal)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051530/sti_medical_expert/radiology/img_201_img7frontal.jpg
+   💡 SCORE: 30/100 (Correspondance suggérée)
+
+   Proposition #21:
+   → Image #202: Radio Thorax - None
+   → Description: Congestive heart failure (Lateral)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051532/sti_medical_expert/radiology/img_202_img7lateral.jpg
+   💡 SCORE: 30/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1058 (MIMIC_142582)
+Pathologie: Cirrhosis of liver without mention of alcohol
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #22:
+   → Image #219: Écho Abdo - None
+   → Description: Liver cirrhosis
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051549/sti_medical_expert/radiology/img_219_img21CoronalCplusPortal.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #23:
+   → Image #270: Écho Abdo - None
+   → Description: Cirrhosis liver ultrasound
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051607/sti_medical_expert/radiology/img_270_img101.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1059 (MIMIC_122098)
+Pathologie: Cirrhosis of liver without mention of alcohol
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #24:
+   → Image #219: Écho Abdo - None
+   → Description: Liver cirrhosis
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051549/sti_medical_expert/radiology/img_219_img21CoronalCplusPortal.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #25:
+   → Image #270: Écho Abdo - None
+   → Description: Cirrhosis liver ultrasound
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051607/sti_medical_expert/radiology/img_270_img101.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1060 (MIMIC_145203)
+Pathologie: Congestive heart failure, unspecified
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #26:
+   → Image #200: Radio Thorax - None
+   → Description: Congestive heart failure
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051529/sti_medical_expert/radiology/img_200_radiocongestiveCardiaque.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+   Proposition #27:
+   → Image #201: Radio Thorax - None
+   → Description: Congestive heart failure (Frontal)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051530/sti_medical_expert/radiology/img_201_img7frontal.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #28:
+   → Image #202: Radio Thorax - None
+   → Description: Congestive heart failure (Lateral)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051532/sti_medical_expert/radiology/img_202_img7lateral.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1061 (MIMIC_111761)
+Pathologie: Closed fracture of base of skull with subarachnoid, subdural, and extradural hemorrhage, with prolonged [more than 24 hours] loss of consciousness, without return to pre-existing conscious level
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #29:
+   → Image #221: Scanner Cérébral - None
+   → Description: Skull base fracture
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051551/sti_medical_expert/radiology/img_221_img24%2A.jpg
+   💡 SCORE: 30/100 (Correspondance suggérée)
+
+   Proposition #30:
+   → Image #235: Scanner Cérébral - None
+   → Description: Open skull fracture CT scan
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051565/sti_medical_expert/radiology/img_235_img39.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1071 (MIMIC_190301)
+Pathologie: Intracerebral hemorrhage
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #31:
+   → Image #199: Scanner Cérébral - None
+   → Description: Intracerebral hemorrhage
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051529/sti_medical_expert/radiology/img_199_img6cascliniqueIMGhemmoragiecerebracacIMG2.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+   Proposition #32:
+   → Image #233: Scanner Cérébral - None
+   → Description: Spontaneous intracerebral hemorrhage
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051563/sti_medical_expert/radiology/img_233_img34.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1076 (MIMIC_180685)
+Pathologie: Other open skull fracture with subarachnoid, subdural, and extradural hemorrhage, with prolonged [more than 24 hours] loss of consciousness, without return to pre-existing conscious level
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #33:
+   → Image #235: Scanner Cérébral - None
+   → Description: Open skull fracture CT scan
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051565/sti_medical_expert/radiology/img_235_img39.jpg
+   💡 SCORE: 30/100 (Correspondance suggérée)
+
+   Proposition #34:
+   → Image #221: Scanner Cérébral - None
+   → Description: Skull base fracture
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051551/sti_medical_expert/radiology/img_221_img24%2A.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1081 (MIMIC_174739)
+Pathologie: Congestive heart failure, unspecified
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #35:
+   → Image #200: Radio Thorax - None
+   → Description: Congestive heart failure
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051529/sti_medical_expert/radiology/img_200_radiocongestiveCardiaque.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+   Proposition #36:
+   → Image #201: Radio Thorax - None
+   → Description: Congestive heart failure (Frontal)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051530/sti_medical_expert/radiology/img_201_img7frontal.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #37:
+   → Image #202: Radio Thorax - None
+   → Description: Congestive heart failure (Lateral)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051532/sti_medical_expert/radiology/img_202_img7lateral.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1083 (MIMIC_167957)
+Pathologie: Congestive heart failure, unspecified
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #38:
+   → Image #200: Radio Thorax - None
+   → Description: Congestive heart failure
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051529/sti_medical_expert/radiology/img_200_radiocongestiveCardiaque.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+   Proposition #39:
+   → Image #201: Radio Thorax - None
+   → Description: Congestive heart failure (Frontal)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051530/sti_medical_expert/radiology/img_201_img7frontal.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #40:
+   → Image #202: Radio Thorax - None
+   → Description: Congestive heart failure (Lateral)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051532/sti_medical_expert/radiology/img_202_img7lateral.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1086 (MIMIC_157466)
+Pathologie: Acute cholecystitis
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #41:
+   → Image #242: Écho Abdo - None
+   → Description: Acute cholecystitis gallstones
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051575/sti_medical_expert/radiology/img_242_img49AxialCplusportalVenous.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1087 (MIMIC_165436)
+Pathologie: Chronic or unspecified duodenal ulcer with hemorrhage, without mention of obstruction
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #42:
+   → Image #243: Gastroscopie - None
+   → Description: Duodenal ulcer (Axial C+)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051577/sti_medical_expert/radiology/img_243_img50AxialCPlus.png
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #43:
+   → Image #244: Gastroscopie - None
+   → Description: Duodenal ulcer (Axial Non-Contrast)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051579/sti_medical_expert/radiology/img_244_img50AxialNonContrast.png
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #44:
+   → Image #245: Gastroscopie - None
+   → Description: Duodenal ulcer (Coronal C+ Arterial)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051580/sti_medical_expert/radiology/img_245_img50CoronalCPlusArterial.png
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1089 (MIMIC_182664)
+Pathologie: Closed fracture of intertrochanteric section of neck of femur
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #45:
+   → Image #198: Radio Épaule - None
+   → Description: Surgical neck humerus fracture
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051528/sti_medical_expert/radiology/img_198_img4surgical-neck-of-humerus-fracture-1%20%281%29.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #46:
+   → Image #246: Radio Bassin - None
+   → Description: Femoral neck fracture
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051581/sti_medical_expert/radiology/img_246_img52.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1097 (MIMIC_198480)
+Pathologie: Cholangitis
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #47:
+   → Image #255: Scanner/Écho - None
+   → Description: Cholangitis biliary dilation (Axial)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051590/sti_medical_expert/radiology/img_255_img60AxialNonContrast.png
+   💡 SCORE: 30/100 (Correspondance suggérée)
+
+   Proposition #48:
+   → Image #256: Scanner/Écho - None
+   → Description: Cholangitis biliary dilation (Coronal)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051592/sti_medical_expert/radiology/img_256_img60CoronalNonContrast.png
+   💡 SCORE: 30/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1099 (MIMIC_127703)
+Pathologie: Subarachnoid hemorrhage following injury without mention of open intracranial wound, with loss of consciousness of unspecified duration
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #49:
+   → Image #257: Scanner Cérébral - None
+   → Description: Subarachnoid hemorrhage
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051593/sti_medical_expert/radiology/img_257_img62.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1104 (MIMIC_161765)
+Pathologie: Acute on chronic systolic heart failure
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #50:
+   → Image #200: Radio Thorax - None
+   → Description: Congestive heart failure
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051529/sti_medical_expert/radiology/img_200_radiocongestiveCardiaque.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #51:
+   → Image #201: Radio Thorax - None
+   → Description: Congestive heart failure (Frontal)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051530/sti_medical_expert/radiology/img_201_img7frontal.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #52:
+   → Image #202: Radio Thorax - None
+   → Description: Congestive heart failure (Lateral)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051532/sti_medical_expert/radiology/img_202_img7lateral.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1106 (MIMIC_116518)
+Pathologie: Tracheoesophageal fistula
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #53:
+   → Image #260: Transit - None
+   → Description: Tracheoesophageal fistula
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051596/sti_medical_expert/radiology/img_260_img69.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1108 (MIMIC_104697)
+Pathologie: Acute cholecystitis
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #54:
+   → Image #242: Écho Abdo - None
+   → Description: Acute cholecystitis gallstones
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051575/sti_medical_expert/radiology/img_242_img49AxialCplusportalVenous.jpg
+   💡 SCORE: 40/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1113 (MIMIC_101361)
+Pathologie: Ventilator associated pneumonia
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #55:
+   → Image #261: Radio Thorax - None
+   → Description: Ventilator associated pneumonia
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051596/sti_medical_expert/radiology/img_261_img76.jpg
+   💡 SCORE: 50/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1129 (MIMIC_107689)
+Pathologie: Closed fracture of first cervical vertebra
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #56:
+   → Image #247: Scanner Rachis - None
+   → Description: Cervical spine fracture
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051582/sti_medical_expert/radiology/img_247_img55sagittalBonneWindow.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+CAS #1130 (MIMIC_154156)
+Pathologie: Acute systolic heart failure
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+   Proposition #57:
+   → Image #200: Radio Thorax - None
+   → Description: Congestive heart failure
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051529/sti_medical_expert/radiology/img_200_radiocongestiveCardiaque.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #58:
+   → Image #201: Radio Thorax - None
+   → Description: Congestive heart failure (Frontal)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051530/sti_medical_expert/radiology/img_201_img7frontal.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+   Proposition #59:
+   → Image #202: Radio Thorax - None
+   → Description: Congestive heart failure (Lateral)
+   → URL: https://res.cloudinary.com/dqwzecrof/image/upload/v1768051532/sti_medical_expert/radiology/img_202_img7lateral.jpg
+   💡 SCORE: 20/100 (Correspondance suggérée)
+
+
+====================================================================================================
+SECTION 4: PATHOLOGIES AVEC IMAGES (SANS CAS CLINIQUE) (1)
+====================================================================================================
+
+1. Pathologie #29854: Méningite Test API
+   Code ICD-10: G03.9
+   Nombre d'images: 1
+   → Image #296: Radiographie - Thorax
+
+
+====================================================================================================
+RÉSUMÉ ET ACTIONS RECOMMANDÉES
+====================================================================================================
+
+✅ 0 associations déjà en place
+🔗 0 images à associer directement (même pathologie)
+💡 59 propositions d'associations intelligentes
+📋 1 pathologies avec images (potentiel pour nouveaux cas)
+
+
+====================================================================================================
+FORMAT CSV POUR IMPORT
+====================================================================================================
+
+case_id,pathologie_id,pathologie_name,image_id,image_type,score,type_association
+1041,25579,"Closed fracture of surgical neck of humerus",198,"Radio Épaule",40,PROPOSITION
+1041,25579,"Closed fracture of surgical neck of humerus",203,"Radio Coude",20,PROPOSITION
+1041,25579,"Closed fracture of surgical neck of humerus",204,"Radio Coude",20,PROPOSITION
+1043,19789,"Intracerebral hemorrhage",199,"Scanner Cérébral",40,PROPOSITION
+1043,19789,"Intracerebral hemorrhage",233,"Scanner Cérébral",40,PROPOSITION
+1044,19759,"Congestive heart failure, unspecified",200,"Radio Thorax",40,PROPOSITION
+1044,19759,"Congestive heart failure, unspecified",201,"Radio Thorax",20,PROPOSITION
+1044,19759,"Congestive heart failure, unspecified",202,"Radio Thorax",20,PROPOSITION
+1046,25597,"Other closed fracture of lower end of humerus",198,"Radio Épaule",20,PROPOSITION
+1046,25597,"Other closed fracture of lower end of humerus",203,"Radio Coude",20,PROPOSITION
+1046,25597,"Other closed fracture of lower end of humerus",204,"Radio Coude",20,PROPOSITION
+1047,17069,"Toxic multinodular goiter without mention of thyrotoxic crisis or storm",205,"Écho Thyroïde",30,PROPOSITION
+1047,17069,"Toxic multinodular goiter without mention of thyrotoxic crisis or storm",206,"Écho Thyroïde",30,PROPOSITION
+1048,19795,"Occlusion and stenosis of carotid artery without mention of cerebral infarction",207,"Echo-Doppler",30,PROPOSITION
+1048,19795,"Occlusion and stenosis of carotid artery without mention of cerebral infarction",208,"Echo-Doppler",30,PROPOSITION
+1048,19795,"Occlusion and stenosis of carotid artery without mention of cerebral infarction",209,"Echo-Doppler",30,PROPOSITION
+1050,26912,"Infection and inflammatory reaction due to other internal orthopedic device, implant, and graft",210,"Radio",20,PROPOSITION
+1050,26912,"Infection and inflammatory reaction due to other internal orthopedic device, implant, and graft",211,"Radio",20,PROPOSITION
+1051,19596,"Unspecified hypertensive heart disease with heart failure",200,"Radio Thorax",30,PROPOSITION
+1051,19596,"Unspecified hypertensive heart disease with heart failure",201,"Radio Thorax",30,PROPOSITION
+1051,19596,"Unspecified hypertensive heart disease with heart failure",202,"Radio Thorax",30,PROPOSITION
+1058,21090,"Cirrhosis of liver without mention of alcohol",219,"Écho Abdo",20,PROPOSITION
+1058,21090,"Cirrhosis of liver without mention of alcohol",270,"Écho Abdo",20,PROPOSITION
+1059,21090,"Cirrhosis of liver without mention of alcohol",219,"Écho Abdo",20,PROPOSITION
+1059,21090,"Cirrhosis of liver without mention of alcohol",270,"Écho Abdo",20,PROPOSITION
+1060,19759,"Congestive heart failure, unspecified",200,"Radio Thorax",40,PROPOSITION
+1060,19759,"Congestive heart failure, unspecified",201,"Radio Thorax",20,PROPOSITION
+1060,19759,"Congestive heart failure, unspecified",202,"Radio Thorax",20,PROPOSITION
+1061,23049,"Closed fracture of base of skull with subarachnoid, subdural, and extradural hemorrhage, with prolonged [more than 24 hours] loss of consciousness, without return to pre-existing conscious level",221,"Scanner Cérébral",30,PROPOSITION
+1061,23049,"Closed fracture of base of skull with subarachnoid, subdural, and extradural hemorrhage, with prolonged [more than 24 hours] loss of consciousness, without return to pre-existing conscious level",235,"Scanner Cérébral",20,PROPOSITION
+1071,19789,"Intracerebral hemorrhage",199,"Scanner Cérébral",40,PROPOSITION
+1071,19789,"Intracerebral hemorrhage",233,"Scanner Cérébral",40,PROPOSITION
+1076,24386,"Other open skull fracture with subarachnoid, subdural, and extradural hemorrhage, with prolonged [more than 24 hours] loss of consciousness, without return to pre-existing conscious level",235,"Scanner Cérébral",30,PROPOSITION
+1076,24386,"Other open skull fracture with subarachnoid, subdural, and extradural hemorrhage, with prolonged [more than 24 hours] loss of consciousness, without return to pre-existing conscious level",221,"Scanner Cérébral",20,PROPOSITION
+1081,19759,"Congestive heart failure, unspecified",200,"Radio Thorax",40,PROPOSITION
+1081,19759,"Congestive heart failure, unspecified",201,"Radio Thorax",20,PROPOSITION
+1081,19759,"Congestive heart failure, unspecified",202,"Radio Thorax",20,PROPOSITION
+1083,19759,"Congestive heart failure, unspecified",200,"Radio Thorax",40,PROPOSITION
+1083,19759,"Congestive heart failure, unspecified",201,"Radio Thorax",20,PROPOSITION
+1083,19759,"Congestive heart failure, unspecified",202,"Radio Thorax",20,PROPOSITION
+1086,21128,"Acute cholecystitis",242,"Écho Abdo",40,PROPOSITION
+1087,21334,"Chronic or unspecified duodenal ulcer with hemorrhage, without mention of obstruction",243,"Gastroscopie",20,PROPOSITION
+1087,21334,"Chronic or unspecified duodenal ulcer with hemorrhage, without mention of obstruction",244,"Gastroscopie",20,PROPOSITION
+1087,21334,"Chronic or unspecified duodenal ulcer with hemorrhage, without mention of obstruction",245,"Gastroscopie",20,PROPOSITION
+1089,22193,"Closed fracture of intertrochanteric section of neck of femur",198,"Radio Épaule",20,PROPOSITION
+1089,22193,"Closed fracture of intertrochanteric section of neck of femur",246,"Radio Bassin",20,PROPOSITION
+1097,21140,"Cholangitis",255,"Scanner/Écho",30,PROPOSITION
+1097,21140,"Cholangitis",256,"Scanner/Écho",30,PROPOSITION
+1099,24405,"Subarachnoid hemorrhage following injury without mention of open intracranial wound, with loss of consciousness of unspecified duration",257,"Scanner Cérébral",40,PROPOSITION
+1104,19764,"Acute on chronic systolic heart failure",200,"Radio Thorax",20,PROPOSITION
+1104,19764,"Acute on chronic systolic heart failure",201,"Radio Thorax",20,PROPOSITION
+1104,19764,"Acute on chronic systolic heart failure",202,"Radio Thorax",20,PROPOSITION
+1106,21302,"Tracheoesophageal fistula",260,"Transit",40,PROPOSITION
+1108,21128,"Acute cholecystitis",242,"Écho Abdo",40,PROPOSITION
+1113,27653,"Ventilator associated pneumonia",261,"Radio Thorax",50,PROPOSITION
+1129,27723,"Closed fracture of first cervical vertebra",247,"Scanner Rachis",20,PROPOSITION
+1130,19762,"Acute systolic heart failure",200,"Radio Thorax",20,PROPOSITION
+1130,19762,"Acute systolic heart failure",201,"Radio Thorax",20,PROPOSITION
+1130,19762,"Acute systolic heart failure",202,"Radio Thorax",20,PROPOSITION

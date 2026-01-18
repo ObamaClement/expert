@@ -1,0 +1,1308 @@
+
+====================================================================================================
+  TEST SYSTÉMATIQUE COMPLET DE L'API STI MEDICAL EXPERT
+====================================================================================================
+URL: https://expert-cmck.onrender.com
+Date: 2026-01-17 19:38:06
+Fichier de sortie: test_api_complet_20260117_193806.txt
+
+====================================================================================================
+  MODULE 1: SYMPTOMS - Tests CRUD complets
+====================================================================================================
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #1: POST /api/v1/symptoms/
+Description: Créer un nouveau symptôme
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: POST
+   URL: https://expert-cmck.onrender.com/api/v1/symptoms/
+   Données envoyées:
+{
+      "nom": "Céphalée Test API",
+      "nom_local": "Mal de tête (Ewondo)",
+      "categorie": "Neurologique",
+      "type_symptome": "Subjectif",
+      "description": "Douleur au niveau de la tête",
+      "questions_anamnese": {
+            "localisation": "Où se situe la douleur ?",
+            "intensite": "Sur une échelle de 1 à 10 ?",
+            "caractere": "Pulsatile, constrictive ?"
+      },
+      "signes_alarme": true
+}
+
+❌ ÉCHEC: Exception: HTTPSConnectionPool(host='expert-cmck.onrender.com', port=443): Read timed out. (read timeout=30)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #2: GET /api/v1/symptoms/
+Description: Récupérer la liste des symptômes
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/symptoms/
+   Paramètres: {
+      "skip": 0,
+      "limit": 10
+}
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 2.88s
+   Type: Liste de 10 éléments
+   Premier élément:
+{
+      "nom": "SPECIMEN TYPE",
+      "nom_local": null,
+      "categorie": "Biologique",
+      "type_symptome": null,
+      "description": null,
+      "questions_anamnese": null,
+      "signes_alarme": false,
+      "id": 12383,
+      "created_at": "2025-12-23T02:18:52.999162",
+      "updated_at": "2025-12-23T02:18:52.999162"
+}
+
+✅ SUCCÈS: Liste récupérée: 10 symptômes
+⚠️  Aucun symptôme créé, test ignoré
+⚠️  Aucun symptôme créé, test ignoré
+
+====================================================================================================
+  MODULE 2: DISEASES - Tests CRUD complets
+====================================================================================================
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #3: POST /api/v1/diseases/
+Description: Créer une nouvelle pathologie
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: POST
+   URL: https://expert-cmck.onrender.com/api/v1/diseases/
+   Données envoyées:
+{
+      "nom_fr": "Méningite Test API",
+      "code_icd10": "G03.9",
+      "nom_en": "Meningitis Test",
+      "nom_local": "Inflammation cerveau (Bulu)",
+      "categorie": "Infectiologie",
+      "prevalence_cameroun": 5.2,
+      "niveau_gravite": 4,
+      "description": "Inflammation des méninges",
+      "physiopathologie": "Infection bactérienne ou virale des méninges",
+      "evolution_naturelle": "Urgence médicale nécessitant un traitement rapide",
+      "complications": {
+            "neurologiques": [
+                  "Séquelles neurologiques",
+                  "Décès"
+            ],
+            "autres": [
+                  "Septicémie"
+            ]
+      },
+      "facteurs_risque": {
+            "age": [
+                  "Nourrissons",
+                  "Jeunes adultes"
+            ],
+            "immunitaires": [
+                  "Immunodépression"
+            ]
+      },
+      "prevention": "Vaccination, hygiène"
+}
+
+📥 RÉPONSE:
+   Status Code: 201
+   Temps de réponse: 1.83s
+   Données reçues:
+{
+      "nom_fr": "Méningite Test API",
+      "code_icd10": "G03.9",
+      "nom_en": "Meningitis Test",
+      "nom_local": "Inflammation cerveau (Bulu)",
+      "categorie": "Infectiologie",
+      "prevalence_cameroun": "5.20",
+      "niveau_gravite": 4,
+      "description": "Inflammation des méninges",
+      "physiopathologie": "Infection bactérienne ou virale des méninges",
+      "evolution_naturelle": "Urgence médicale nécessitant un traitement rapide",
+      "complications": {
+            "neurologiques": [
+                  "Séquelles neurologiques",
+                  "Décès"
+            ],
+            "autres": [
+                  "Septicémie"
+            ]
+      },
+      "facteurs_risque": {
+            "age": [
+                  "Nourrissons",
+                  "Jeunes adultes"
+            ],
+            "immunitaires": [
+                  "Immunodépression"
+            ]
+      },
+      "prevention": "Vaccination, hygiène",
+      "id": 29854,
+      "created_at": "2026-01-17T18:41:05.027434",
+      "updated_at": "2026-01-17T18:41:05.027434"
+}
+
+✅ SUCCÈS: Pathologie créée avec ID: 29854
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #4: GET /api/v1/diseases/
+Description: Récupérer la liste des pathologies
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/diseases/
+   Paramètres: {
+      "skip": 0,
+      "limit": 10
+}
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.68s
+   Type: Liste de 10 éléments
+   Premier élément:
+{
+      "nom_fr": "Erythema nodosum with hypersensitivity reaction in tuberculosis, tubercle bacilli not found by bacteriological or histological examination, but tuberculosis confirmed by other methods [inoculation of animals]",
+      "code_icd10": "01716",
+      "nom_en": null,
+      "nom_local": null,
+      "categorie": "Importé de MIMIC-III",
+      "prevalence_cameroun": null,
+      "niveau_gravite": null,
+      "description": null,
+      "physiopathologie": null,
+      "evolution_naturelle": null,
+      "complications": null,
+      "facteurs_risque": null,
+      "prevention": null,
+      "id": 15287,
+      "created_at": "2025-12-23T02:18:51.690124",
+      "updated_at": "2025-12-23T02:18:51.690124"
+}
+
+✅ SUCCÈS: Liste récupérée: 10 pathologies
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #5: GET /api/v1/diseases/29854
+Description: Récupérer une pathologie par ID
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/diseases/29854
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.71s
+   Données reçues:
+{
+      "nom_fr": "Méningite Test API",
+      "code_icd10": "G03.9",
+      "nom_en": "Meningitis Test",
+      "nom_local": "Inflammation cerveau (Bulu)",
+      "categorie": "Infectiologie",
+      "prevalence_cameroun": "5.20",
+      "niveau_gravite": 4,
+      "description": "Inflammation des méninges",
+      "physiopathologie": "Infection bactérienne ou virale des méninges",
+      "evolution_naturelle": "Urgence médicale nécessitant un traitement rapide",
+      "complications": {
+            "neurologiques": [
+                  "Séquelles neurologiques",
+                  "Décès"
+            ],
+            "autres": [
+                  "Septicémie"
+            ]
+      },
+      "facteurs_risque": {
+            "age": [
+                  "Nourrissons",
+                  "Jeunes adultes"
+            ],
+            "immunitaires": [
+                  "Immunodépression"
+            ]
+      },
+      "prevention": "Vaccination, hygiène",
+      "id": 29854,
+      "created_at": "2026-01-17T18:41:05.027434",
+      "updated_at": "2026-01-17T18:41:05.027434"
+}
+
+✅ SUCCÈS: Pathologie récupérée
+
+====================================================================================================
+  MODULE 3: MEDICATIONS - Tests CRUD complets
+====================================================================================================
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #6: POST /api/v1/medications/
+Description: Créer un nouveau médicament
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: POST
+   URL: https://expert-cmck.onrender.com/api/v1/medications/
+   Données envoyées:
+{
+      "dci": "Amoxicilline Test API",
+      "nom_commercial": "Clamoxyl Test",
+      "classe_therapeutique": "Antibiotique - Pénicilline",
+      "forme_galenique": "Gélule",
+      "dosage": "1g",
+      "voie_administration": "Orale",
+      "mecanisme_action": "Inhibition de la synthèse de la paroi bactérienne",
+      "indications": {
+            "principales": [
+                  "Infections respiratoires",
+                  "Infections ORL"
+            ]
+      },
+      "contre_indications": {
+            "absolues": [
+                  "Allergie aux pénicillines"
+            ]
+      },
+      "effets_secondaires": {
+            "digestifs": [
+                  "Diarrhée",
+                  "Nausées"
+            ]
+      },
+      "interactions_medicamenteuses": {
+            "attention": [
+                  "Méthotrexate"
+            ]
+      },
+      "precautions_emploi": "Surveiller fonction rénale",
+      "posologie_standard": {
+            "adulte": "1g x 3/jour"
+      },
+      "disponibilite_cameroun": "Disponible",
+      "cout_moyen_fcfa": 2500,
+      "statut_prescription": "Sur ordonnance"
+}
+
+📥 RÉPONSE:
+   Status Code: 201
+   Temps de réponse: 0.65s
+   Données reçues:
+{
+      "dci": "Amoxicilline Test API",
+      "nom_commercial": "Clamoxyl Test",
+      "classe_therapeutique": "Antibiotique - Pénicilline",
+      "forme_galenique": "Gélule",
+      "dosage": "1g",
+      "voie_administration": "Orale",
+      "mecanisme_action": "Inhibition de la synthèse de la paroi bactérienne",
+      "indications": {
+            "principales": [
+                  "Infections respiratoires",
+                  "Infections ORL"
+            ]
+      },
+      "contre_indications": {
+            "absolues": [
+                  "Allergie aux pénicillines"
+            ]
+      },
+      "effets_secondaires": {
+            "digestifs": [
+                  "Diarrhée",
+                  "Nausées"
+            ]
+      },
+      "interactions_medicamenteuses": {
+            "attention": [
+                  "Méthotrexate"
+            ]
+      },
+      "precautions_emploi": "Surveiller fonction rénale",
+      "posologie_standard": {
+            "adulte": "1g x 3/jour"
+      },
+      "disponibilite_cameroun": "Disponible",
+      "cout_moyen_fcfa": 2500,
+      "statut_prescription": "Sur ordonnance",
+      "id": 1182,
+      "created_at": "2026-01-17T18:41:11.575146",
+      "updated_at": "2026-01-17T18:41:11.575146"
+}
+
+✅ SUCCÈS: Médicament créé avec ID: 1182
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #7: GET /api/v1/medications/
+Description: Récupérer la liste des médicaments
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/medications/
+   Paramètres: {
+      "skip": 0,
+      "limit": 10
+}
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.59s
+   Type: Liste de 10 éléments
+   Premier élément:
+{
+      "dci": "PNEU25I",
+      "nom_commercial": "Pneumococcal Vac Polyvalent",
+      "classe_therapeutique": "Importé de MIMIC-III",
+      "forme_galenique": null,
+      "dosage": "25mcg/0.5mL Vial",
+      "voie_administration": "IM",
+      "mecanisme_action": null,
+      "indications": null,
+      "contre_indications": null,
+      "effets_secondaires": null,
+      "interactions_medicamenteuses": null,
+      "precautions_emploi": null,
+      "posologie_standard": null,
+      "disponibilite_cameroun": "Inconnue",
+      "cout_moyen_fcfa": null,
+      "statut_prescription": null,
+      "id": 592,
+      "created_at": "2025-12-23T02:18:53.690758",
+      "updated_at": "2025-12-23T02:18:53.690758"
+}
+
+✅ SUCCÈS: Liste récupérée: 10 médicaments
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #8: GET /api/v1/medications/1182
+Description: Récupérer un médicament par ID
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/medications/1182
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.57s
+   Données reçues:
+{
+      "dci": "Amoxicilline Test API",
+      "nom_commercial": "Clamoxyl Test",
+      "classe_therapeutique": "Antibiotique - Pénicilline",
+      "forme_galenique": "Gélule",
+      "dosage": "1g",
+      "voie_administration": "Orale",
+      "mecanisme_action": "Inhibition de la synthèse de la paroi bactérienne",
+      "indications": {
+            "principales": [
+                  "Infections respiratoires",
+                  "Infections ORL"
+            ]
+      },
+      "contre_indications": {
+            "absolues": [
+                  "Allergie aux pénicillines"
+            ]
+      },
+      "effets_secondaires": {
+            "digestifs": [
+                  "Diarrhée",
+                  "Nausées"
+            ]
+      },
+      "interactions_medicamenteuses": {
+            "attention": [
+                  "Méthotrexate"
+            ]
+      },
+      "precautions_emploi": "Surveiller fonction rénale",
+      "posologie_standard": {
+            "adulte": "1g x 3/jour"
+      },
+      "disponibilite_cameroun": "Disponible",
+      "cout_moyen_fcfa": 2500,
+      "statut_prescription": "Sur ordonnance",
+      "id": 1182,
+      "created_at": "2026-01-17T18:41:11.575146",
+      "updated_at": "2026-01-17T18:41:11.575146"
+}
+
+✅ SUCCÈS: Médicament récupéré
+
+====================================================================================================
+  MODULE 4: RELATIONS SYMPTÔMES-PATHOLOGIES
+====================================================================================================
+⚠️  Pathologie ou symptôme manquant, test ignoré
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #9: GET /api/v1/diseases/29854/symptoms
+Description: Récupérer les symptômes d'une pathologie
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/diseases/29854/symptoms
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.91s
+   Données reçues:
+[]
+
+✅ SUCCÈS: 0 symptômes trouvés
+
+====================================================================================================
+  MODULE 5: RELATIONS TRAITEMENTS-PATHOLOGIES
+====================================================================================================
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #10: POST /api/v1/diseases/29854/treatments
+Description: Associer un traitement à une pathologie
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: POST
+   URL: https://expert-cmck.onrender.com/api/v1/diseases/29854/treatments
+   Données envoyées:
+{
+      "pathologie_id": 29854,
+      "medicament_id": 1182,
+      "type_traitement": "Curatif",
+      "ligne_traitement": 1,
+      "indication_precise": "Traitement de première intention",
+      "efficacite_taux": 92.5,
+      "duree_traitement_jours": 10,
+      "posologie_detaillee": {
+            "dose": "1g x 3/jour",
+            "duree": "10 jours"
+      },
+      "niveau_preuve": "A",
+      "guidelines_source": "OMS 2024",
+      "rang_preference": 1
+}
+
+📥 RÉPONSE:
+   Status Code: 201
+   Temps de réponse: 0.69s
+   Données reçues:
+{
+      "pathologie_id": 29854,
+      "medicament_id": 1182,
+      "type_traitement": "Curatif",
+      "ligne_traitement": 1,
+      "indication_precise": "Traitement de première intention",
+      "efficacite_taux": "92.50",
+      "duree_traitement_jours": 10,
+      "posologie_detaillee": {
+            "dose": "1g x 3/jour",
+            "duree": "10 jours"
+      },
+      "niveau_preuve": "A",
+      "guidelines_source": "OMS 2024",
+      "rang_preference": 1,
+      "id": 84244
+}
+
+✅ SUCCÈS: Traitement associé à la pathologie
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #11: GET /api/v1/diseases/29854/treatments
+Description: Récupérer les traitements d'une pathologie
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/diseases/29854/treatments
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.60s
+   Données reçues:
+[
+      {
+            "medicament": {
+                  "dci": "Amoxicilline Test API",
+                  "nom_commercial": "Clamoxyl Test",
+                  "classe_therapeutique": "Antibiotique - Pénicilline",
+                  "forme_galenique": "Gélule",
+                  "dosage": "1g",
+                  "voie_administration": "Orale",
+                  "mecanisme_action": "Inhibition de la synthèse de la paroi bactérienne",
+                  "indications": {
+                        "principales": [
+                              "Infections respiratoires",
+                              "Infections ORL"
+                        ]
+                  },
+                  "contre_indications": {
+                        "absolues": [
+                              "Allergie aux pénicillines"
+                        ]
+                  },
+                  "effets_secondaires": {
+                        "digestifs": [
+                              "Diarrhée",
+                              "Nausées"
+                        ]
+                  },
+                  "interactions_medicamenteuses": {
+                        "attention": [
+                              "Méthotrexate"
+                        ]
+                  },
+                  "precautions_emploi": "Surveiller fonction rénale",
+                  "posologie_standard": {
+                        "adulte": "1g x 3/jour"
+                  },
+                  "disponibilite_cameroun": "Disponible",
+                  "cout_moyen_fcfa": 2500,
+                  "statut_prescription": "Sur ordonnance",
+                  "id": 1182,
+                  "created_at": "2026-01-17T18:41:11.575146",
+                  "updated_at": "2026-01-17T18:41:11.575146"
+            },
+            "type_traitement": "Curatif",
+            "ligne_traitement": 1,
+            "rang_preference": 1
+      }
+]
+
+✅ SUCCÈS: 1 traitements trouvés
+
+====================================================================================================
+  MODULE 6: RELATIONS TRAITEMENTS SYMPTOMATIQUES
+====================================================================================================
+⚠️  Symptôme ou médicament manquant, test ignoré
+⚠️  Aucun symptôme créé, test ignoré
+
+====================================================================================================
+  MODULE 7: CLINICAL CASES - Cas cliniques
+====================================================================================================
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #12: POST /api/v1/clinical-cases/
+Description: Créer un cas clinique
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: POST
+   URL: https://expert-cmck.onrender.com/api/v1/clinical-cases/
+   Données envoyées:
+{
+      "code_fultang": "TEST_API_1768675290",
+      "pathologie_principale_id": 29854,
+      "pathologies_secondaires_ids": [],
+      "presentation_clinique": {
+            "histoire_maladie": "Patient de 28 ans consultant pour céphalées intenses",
+            "symptomes_patient": [
+                  {
+                        "symptome_id": 1,
+                        "details": "Céphalée intense"
+                  }
+            ],
+            "antecedents": {
+                  "medicaux": [
+                        "RAS"
+                  ]
+            }
+      },
+      "donnees_paracliniques": {},
+      "evolution_patient": "Amélioration",
+      "images_associees_ids": [],
+      "sons_associes_ids": [],
+      "medicaments_prescrits": [],
+      "niveau_difficulte": 3,
+      "duree_estimee_resolution_min": 45,
+      "objectifs_apprentissage": [
+            "Diagnostic"
+      ],
+      "competences_requises": {}
+}
+
+📥 RÉPONSE:
+   Status Code: 201
+   Temps de réponse: 0.66s
+   Données reçues:
+{
+      "code_fultang": "TEST_API_1768675290",
+      "pathologie_principale_id": 29854,
+      "pathologies_secondaires_ids": [],
+      "presentation_clinique": {
+            "histoire_maladie": "Patient de 28 ans consultant pour céphalées intenses",
+            "symptomes_patient": [
+                  {
+                        "symptome_id": 1,
+                        "details": "Céphalée intense"
+                  }
+            ],
+            "antecedents": {
+                  "medicaux": [
+                        "RAS"
+                  ]
+            }
+      },
+      "donnees_paracliniques": {},
+      "evolution_patient": "Amélioration",
+      "images_associees_ids": [],
+      "sons_associes_ids": [],
+      "medicaments_prescrits": [],
+      "niveau_difficulte": 3,
+      "duree_estimee_resolution_min": 45,
+      "objectifs_apprentissage": [
+            "Diagnostic"
+      ],
+      "competences_requises": {},
+      "id": 1175,
+      "created_at": "2026-01-17T18:41:31.557246",
+      "updated_at": "2026-01-17T18:41:31.557246",
+      "pathologie_principale": {
+            "nom_fr": "Méningite Test API",
+            "code_icd10": "G03.9",
+            "nom_en": "Meningitis Test",
+            "nom_local": "Inflammation cerveau (Bulu)",
+            "categorie": "Infectiologie",
+            "prevalence_cameroun": "5.20",
+            "niveau_gravite": 4,
+            "description": "Inflammation des méninges",
+            "physiopathologie": "Infection bactérienne ou virale des méninges",
+            "evolution_naturelle": "Urgence médicale nécessitant un traitement rapide",
+            "complications": {
+                  "neurologiques": [
+                        "Séquelles neurologiques",
+                        "Décès"
+                  ],
+                  "autres": [
+                        "Septicémie"
+                  ]
+            },
+            "facteurs_risque": {
+                  "age": [
+                        "Nourrissons",
+                        "Jeunes adultes"
+                  ],
+                  "immunitaires": [
+                        "Immunodépression"
+                  ]
+            },
+            "prevention": "Vaccination, hygiène",
+            "id": 29854,
+            "created_at": "2026-01-17T18:41:05.027434",
+            "updated_at": "2026-01-17T18:41:05.027434"
+      },
+      "pathologies_secondaires": [],
+      "images_associees": [],
+      "presentation_clinique_detail": null
+}
+
+✅ SUCCÈS: Cas clinique créé avec ID: 1175
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #13: GET /api/v1/clinical-cases/
+Description: Récupérer la liste des cas cliniques
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/clinical-cases/
+   Paramètres: {
+      "skip": 0,
+      "limit": 5
+}
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 1.00s
+   Type: Liste de 5 éléments
+   Premier élément:
+{
+      "id": 1038,
+      "code_fultang": "MIMIC_142345",
+      "niveau_difficulte": 20,
+      "pathologie_principale": {
+            "nom_fr": "Sepsis",
+            "code_icd10": "99591",
+            "nom_en": null,
+            "nom_local": null,
+            "categorie": "Importé de MIMIC-III",
+            "prevalence_cameroun": null,
+            "niveau_gravite": null,
+            "description": null,
+            "physiopathologie": null,
+            "evolution_naturelle": null,
+            "complications": null,
+            "facteurs_risque": null,
+            "prevention": null,
+            "id": 26689,
+            "created_at": "2025-12-23T02:18:51.690124",
+            "updated_at": "2025-12-23T02:18:51.690124"
+      },
+      "nb_images": 0,
+      "nb_sons": 0
+}
+
+✅ SUCCÈS: Liste récupérée: 5 cas cliniques
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #14: GET /api/v1/clinical-cases/1175
+Description: Récupérer un cas clinique complet
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/clinical-cases/1175
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.56s
+   Données reçues:
+{
+      "code_fultang": "TEST_API_1768675290",
+      "pathologie_principale_id": 29854,
+      "pathologies_secondaires_ids": [],
+      "presentation_clinique": {
+            "histoire_maladie": "Patient de 28 ans consultant pour céphalées intenses",
+            "symptomes_patient": [
+                  {
+                        "symptome_id": 1,
+                        "details": "Céphalée intense"
+                  }
+            ],
+            "antecedents": {
+                  "medicaux": [
+                        "RAS"
+                  ]
+            }
+      },
+      "donnees_paracliniques": {},
+      "evolution_patient": "Amélioration",
+      "images_associees_ids": [],
+      "sons_associes_ids": [],
+      "medicaments_prescrits": [],
+      "niveau_difficulte": 3,
+      "duree_estimee_resolution_min": 45,
+      "objectifs_apprentissage": [
+            "Diagnostic"
+      ],
+      "competences_requises": {},
+      "id": 1175,
+      "created_at": "2026-01-17T18:41:31.557246",
+      "updated_at": "2026-01-17T18:41:31.557246",
+      "pathologie_principale": null,
+      "pathologies_secondaires": [],
+      "images_associees": [],
+      "presentation_clinique_detail": {
+            "histoire_maladie": "Patient de 28 ans consultant pour céphalées intenses",
+            "symptomes_patient": [],
+            "antecedents": {
+                  "medicaux": [
+                        "RAS"
+                  ]
+            }
+      }
+}
+
+✅ SUCCÈS: Cas clinique complet récupéré
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #15: GET /api/v1/clinical-cases/1175/simple
+Description: Récupérer un cas clinique simplifié
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/clinical-cases/1175/simple
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.62s
+   Données reçues:
+{
+      "id": 1175,
+      "code_fultang": "TEST_API_1768675290",
+      "niveau_difficulte": 3,
+      "pathologie_principale": {
+            "nom_fr": "Méningite Test API",
+            "code_icd10": "G03.9",
+            "nom_en": "Meningitis Test",
+            "nom_local": "Inflammation cerveau (Bulu)",
+            "categorie": "Infectiologie",
+            "prevalence_cameroun": "5.20",
+            "niveau_gravite": 4,
+            "description": "Inflammation des méninges",
+            "physiopathologie": "Infection bactérienne ou virale des méninges",
+            "evolution_naturelle": "Urgence médicale nécessitant un traitement rapide",
+            "complications": {
+                  "neurologiques": [
+                        "Séquelles neurologiques",
+                        "Décès"
+                  ],
+                  "autres": [
+                        "Septicémie"
+                  ]
+            },
+            "facteurs_risque": {
+                  "age": [
+                        "Nourrissons",
+                        "Jeunes adultes"
+                  ],
+                  "immunitaires": [
+                        "Immunodépression"
+                  ]
+            },
+            "prevention": "Vaccination, hygiène",
+            "id": 29854,
+            "created_at": "2026-01-17T18:41:05.027434",
+            "updated_at": "2026-01-17T18:41:05.027434"
+      },
+      "nb_images": 0,
+      "nb_sons": 0
+}
+
+✅ SUCCÈS: Cas clinique simplifié récupéré
+
+====================================================================================================
+  MODULE 8: EXPERT STRATEGIES - Règles expertes
+====================================================================================================
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #16: POST /api/v1/expert-strategies/
+Description: Créer une règle experte
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: POST
+   URL: https://expert-cmck.onrender.com/api/v1/expert-strategies/
+   Données envoyées:
+{
+      "code_regle": "RULE_TEST_1768675298",
+      "categorie": "Diagnostic",
+      "priorite": 8,
+      "conditions": {
+            "symptomes": [
+                  "fièvre",
+                  "céphalée",
+                  "raideur nuque"
+            ],
+            "age_min": 0
+      },
+      "actions": [
+            {
+                  "type": "alerte",
+                  "message": "Suspicion de méningite - Urgence"
+            },
+            {
+                  "type": "examen",
+                  "nom": "Ponction lombaire"
+            }
+      ],
+      "description_naturelle": "Si fièvre + céphalée + raideur de nuque → suspecter méningite",
+      "justification_medicale": "Triade classique de la méningite",
+      "expert_auteur": "Dr. Test API",
+      "date_validation": "2025-01-17",
+      "est_active": true
+}
+
+📥 RÉPONSE:
+   Status Code: 201
+   Temps de réponse: 0.66s
+   Données reçues:
+{
+      "code_regle": "RULE_TEST_1768675298",
+      "categorie": "Diagnostic",
+      "priorite": 8,
+      "conditions": {
+            "symptomes": [
+                  "fièvre",
+                  "céphalée",
+                  "raideur nuque"
+            ],
+            "age_min": 0
+      },
+      "actions": [
+            {
+                  "type": "alerte",
+                  "message": "Suspicion de méningite - Urgence"
+            },
+            {
+                  "type": "examen",
+                  "nom": "Ponction lombaire"
+            }
+      ],
+      "description_naturelle": "Si fièvre + céphalée + raideur de nuque → suspecter méningite",
+      "justification_medicale": "Triade classique de la méningite",
+      "expert_auteur": "Dr. Test API",
+      "date_validation": "2025-01-17",
+      "est_active": true,
+      "id": 2,
+      "nb_activations": 0,
+      "taux_succes": null,
+      "created_at": "2026-01-17T18:41:38.938932",
+      "updated_at": "2026-01-17T18:41:38.938932"
+}
+
+✅ SUCCÈS: Règle experte créée avec ID: 2
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #17: GET /api/v1/expert-strategies/
+Description: Lister les règles expertes
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/expert-strategies/
+   Paramètres: {
+      "skip": 0,
+      "limit": 10
+}
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.60s
+   Type: Liste de 2 éléments
+   Premier élément:
+{
+      "code_regle": "DIAG_PALU_SIMPLE_01",
+      "categorie": "DIAGNOSTIC",
+      "priorite": 7,
+      "conditions": {
+            "operator": "AND",
+            "rules": [
+                  {
+                        "fact": "symptom",
+                        "value": "Fièvre",
+                        "operator": "present"
+                  },
+                  {
+                        "fact": "context",
+                        "value": "zone_endemique",
+                        "operator": "is"
+                  }
+            ]
+      },
+      "actions": [
+            {
+                  "action": "add_hypothesis",
+                  "pathology": "Paludisme simple",
+                  "confidence": 0.7
+            }
+      ],
+      "description_naturelle": "Si un patient en zone endémique a de la fièvre, suspecter un paludisme simple.",
+      "justification_medicale": null,
+      "expert_auteur": null,
+      "date_validation": null,
+      "est_active": true,
+      "id": 1,
+      "nb_activations": 0,
+      "taux_succes": null,
+      "created_at": "2025-11-07T15:14:23.683950",
+      "updated_at": "2025-11-07T15:14:23.683950"
+}
+
+✅ SUCCÈS: Liste récupérée: 2 règles
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #18: GET /api/v1/expert-strategies/2
+Description: Récupérer une règle experte
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/expert-strategies/2
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.57s
+   Données reçues:
+{
+      "code_regle": "RULE_TEST_1768675298",
+      "categorie": "Diagnostic",
+      "priorite": 8,
+      "conditions": {
+            "symptomes": [
+                  "fièvre",
+                  "céphalée",
+                  "raideur nuque"
+            ],
+            "age_min": 0
+      },
+      "actions": [
+            {
+                  "type": "alerte",
+                  "message": "Suspicion de méningite - Urgence"
+            },
+            {
+                  "type": "examen",
+                  "nom": "Ponction lombaire"
+            }
+      ],
+      "description_naturelle": "Si fièvre + céphalée + raideur de nuque → suspecter méningite",
+      "justification_medicale": "Triade classique de la méningite",
+      "expert_auteur": "Dr. Test API",
+      "date_validation": "2025-01-17",
+      "est_active": true,
+      "id": 2,
+      "nb_activations": 0,
+      "taux_succes": null,
+      "created_at": "2026-01-17T18:41:38.938932",
+      "updated_at": "2026-01-17T18:41:38.938932"
+}
+
+✅ SUCCÈS: Règle experte récupérée
+
+====================================================================================================
+  MODULE 9: DIAGNOSTIC ENGINE - Moteur de diagnostic
+====================================================================================================
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #19: POST /api/v1/diagnostic-engine/run
+Description: Exécuter le moteur de diagnostic
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: POST
+   URL: https://expert-cmck.onrender.com/api/v1/diagnostic-engine/run
+   Données envoyées:
+{
+      "symptoms": [
+            "fièvre",
+            "céphalée intense",
+            "raideur de nuque"
+      ],
+      "context": [
+            "adulte jeune",
+            "début brutal"
+      ],
+      "age": 25
+}
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.70s
+   Données reçues:
+[]
+
+✅ SUCCÈS: Moteur de diagnostic exécuté
+
+====================================================================================================
+  MODULE 10: MEDIA - Gestion des images médicales
+====================================================================================================
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #20: POST /api/v1/media/images/upload
+Description: Upload d'une image médicale
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: POST
+   URL: https://expert-cmck.onrender.com/api/v1/media/images/upload
+   Données envoyées:
+{
+      "type_examen": "Radiographie",
+      "sous_type": "Thorax",
+      "description": "Image de test API",
+      "pathologie_id": 29854
+}
+
+📥 RÉPONSE:
+   Status Code: 201
+   Temps de réponse: 1.96s
+   Données reçues:
+{
+      "type_examen": "Radiographie",
+      "sous_type": "Thorax",
+      "pathologie_id": 29854,
+      "description": "Image de test API",
+      "signes_radiologiques": null,
+      "annotations": null,
+      "interpretation_experte": null,
+      "diagnostic_differentiel": null,
+      "niveau_difficulte": null,
+      "qualite_image": null,
+      "valide_expert": false,
+      "expert_validateur": null,
+      "date_validation": null,
+      "id": 296,
+      "fichier_url": "https://res.cloudinary.com/dqwzecrof/image/upload/v1768675305/sti_medical_expert/uploads/zwefonk7gwc6omtrrjak.png",
+      "fichier_miniature_url": null,
+      "format_image": "png",
+      "taille_ko": 0,
+      "resolution": null,
+      "created_at": "2026-01-17T18:41:46.113065"
+}
+
+✅ SUCCÈS: Image uploadée avec ID: 296
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #21: GET /api/v1/media/images
+Description: Lister les images médicales
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/media/images
+   Paramètres: {
+      "skip": 0,
+      "limit": 10
+}
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.65s
+   Type: Liste de 10 éléments
+   Premier élément:
+{
+      "type_examen": "Radio Épaule",
+      "sous_type": null,
+      "pathologie_id": null,
+      "description": "Surgical neck humerus fracture",
+      "signes_radiologiques": null,
+      "annotations": null,
+      "interpretation_experte": null,
+      "diagnostic_differentiel": null,
+      "niveau_difficulte": null,
+      "qualite_image": null,
+      "valide_expert": false,
+      "expert_validateur": null,
+      "date_validation": null,
+      "id": 198,
+      "fichier_url": "https://res.cloudinary.com/dqwzecrof/image/upload/v1768051528/sti_medical_expert/radiology/img_198_img4surgical-neck-of-humerus-fracture-1%20%281%29.jpg",
+      "fichier_miniature_url": null,
+      "format_image": "jpg",
+      "taille_ko": null,
+      "resolution": null,
+      "created_at": "2025-12-23T02:27:38.522721"
+}
+
+✅ SUCCÈS: Liste récupérée: 10 images
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #22: GET /api/v1/media/images/296
+Description: Récupérer les métadonnées d'une image
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/media/images/296
+
+📥 RÉPONSE:
+   Status Code: 200
+   Temps de réponse: 0.58s
+   Données reçues:
+{
+      "type_examen": "Radiographie",
+      "sous_type": "Thorax",
+      "pathologie_id": 29854,
+      "description": "Image de test API",
+      "signes_radiologiques": null,
+      "annotations": null,
+      "interpretation_experte": null,
+      "diagnostic_differentiel": null,
+      "niveau_difficulte": null,
+      "qualite_image": null,
+      "valide_expert": false,
+      "expert_validateur": null,
+      "date_validation": null,
+      "id": 296,
+      "fichier_url": "https://res.cloudinary.com/dqwzecrof/image/upload/v1768675305/sti_medical_expert/uploads/zwefonk7gwc6omtrrjak.png",
+      "fichier_miniature_url": null,
+      "format_image": "png",
+      "taille_ko": 0,
+      "resolution": null,
+      "created_at": "2026-01-17T18:41:46.113065"
+}
+
+✅ SUCCÈS: Métadonnées image récupérées
+
+====================================================================================================
+  MODULE 11: CHAT - Système de messagerie
+====================================================================================================
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #23: POST /api/v1/chat/sessions/5dafba66-679a-460c-aeff-fea6e332ac2d/messages
+Description: Envoyer un message dans le chat
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: POST
+   URL: https://expert-cmck.onrender.com/api/v1/chat/sessions/5dafba66-679a-460c-aeff-fea6e332ac2d/messages
+   Données envoyées:
+{
+      "sender": "Etudiant",
+      "content": "Bonjour, je souhaite discuter de ce cas clinique",
+      "message_metadata": {
+            "type": "question"
+      }
+}
+
+📥 RÉPONSE:
+   Status Code: 404
+   Temps de réponse: 0.60s
+   Données reçues:
+{
+      "detail": "La session avec l'ID 5dafba66-679a-460c-aeff-fea6e332ac2d n'a pas été trouvée."
+}
+
+❌ ÉCHEC: Code 404 attendu 201
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #24: GET /api/v1/chat/sessions/5dafba66-679a-460c-aeff-fea6e332ac2d/messages
+Description: Récupérer l'historique du chat
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+📤 REQUÊTE:
+   Méthode: GET
+   URL: https://expert-cmck.onrender.com/api/v1/chat/sessions/5dafba66-679a-460c-aeff-fea6e332ac2d/messages
+
+📥 RÉPONSE:
+   Status Code: 404
+   Temps de réponse: 0.54s
+   Données reçues:
+{
+      "detail": "La session avec l'ID 5dafba66-679a-460c-aeff-fea6e332ac2d n'a pas été trouvée."
+}
+
+❌ ÉCHEC: Code 404 attendu 200
+
+====================================================================================================
+  RÉSUMÉ DES TESTS
+====================================================================================================
+Total de tests: 24
+Succès: 21
+Échecs: 3
+Taux de réussite: 87.5%
+
+📝 IDs créés pendant les tests:
+   disease: 29854
+   medication: 1182
+   clinical_case: 1175
+   expert_strategy: 2
+   image: 296
+   chat_session: 5dafba66-679a-460c-aeff-fea6e332ac2d
+
+====================================================================================================
+  NETTOYAGE DES DONNÉES DE TEST
+====================================================================================================
+
+🗑️  Suppression Cas clinique ID 1175...
+⚠️  Erreur 500
+
+🗑️  Suppression Médicament ID 1182...
+⚠️  Erreur 500
+
+🗑️  Suppression Pathologie ID 29854...
+⚠️  Erreur 500
