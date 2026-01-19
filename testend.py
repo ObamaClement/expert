@@ -4,7 +4,7 @@ from datetime import datetime
 import time
 
 # Configuration
-BASE_URL = "https://expert-cmck.onrender.com"
+BASE_URL ="http://127.0.0.1:8000/"
 API_BASE = f"{BASE_URL}/api/v1"
 OUTPUT_FILE = f"test_progression_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
 
@@ -24,8 +24,8 @@ class ProgressionTester:
         self.test_count = 0
         self.success_count = 0
         self.fail_count = 0
-        self.learner_id = 1  # ID de l'apprenant test
-        self.category = "Infectiologie"
+        self.learner_id = 7  # ID de l'apprenant test
+        self.category = "Urgences"
         self.sessions_history = []
         
     def write(self, message, color=None):

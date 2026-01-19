@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 # Constantes pour l'API OpenRouter
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
-# Utilisation d'un modèle performant et gratuit si disponible, sinon fallback
 MODEL_NAME = "mistralai/mistral-7b-instruct:free"
 
 def _call_openrouter_api(prompt: str) -> Dict[str, Any]:
@@ -51,7 +50,7 @@ def _call_openrouter_api(prompt: str) -> Dict[str, Any]:
             "score_diagnostic": 0,
             "score_therapeutique": 0,
             "score_demarche": 0,
-            "feedback_global": "Erreur de connexion au service d'IA. Veuillez réessayer.",
+            "feedback_global": "Erreur de connexion au service d'IA.",
             "recommendation_next_step": "Veuillez réessayer plus tard."
         }
     
@@ -63,7 +62,7 @@ def _call_openrouter_api(prompt: str) -> Dict[str, Any]:
             "score_diagnostic": 0,
             "score_therapeutique": 0,
             "score_demarche": 0,
-            "feedback_global": "Erreur technique lors de l'interprétation de la réponse de l'IA.",
+            "feedback_global": "Erreur lors de l'interprétation de la réponse de l'IA.",
             "recommendation_next_step": "Veuillez réessayer plus tard."
         }
 
@@ -158,7 +157,7 @@ def evaluate_final_submission(
 ) -> Tuple[schemas.simulation.EvaluationResult, str, str]:
     """
     Évalue la soumission finale de l'apprenant en utilisant l'IA.
-    Notation stricte sur 20 points.
+    ✅ CORRECTION MAJEURE: Notation sur /20 (10 + 5 + 5)
     """
     logger.info("[evaluate_final_submission] Début de l'évaluation...")
     
@@ -244,6 +243,8 @@ BARÈME DE NOTATION (TOTAL /20):
    - "Passer à un cas de difficulté supérieure" (si score >= 12/20)
    - "Reprendre un cas de difficulté similaire" (si score < 12/20)
    - "Revoir les bases de cette catégorie" (si score < 8/20)
+
+IMPORTANT: Le score total DOIT être la somme des 3 scores (max 20).
 
 EXEMPLE DE RÉPONSE ATTENDUE:
 {{
