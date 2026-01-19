@@ -70,3 +70,16 @@ logs/
 *.log
 alembic/versions/*
 all_py.txt
+
+# Fichiers de compilation de code
+all.txt
+all_python_code.txt
+all_python_files.txt
+app/all.txt
+app/*/all.txt
+
+# Fichiers de tests et logs
+test_*.txt
+*_test_*.txt
+associations_*.txt
+update_categories_*.txt
