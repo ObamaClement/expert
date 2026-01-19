@@ -1,0 +1,21 @@
+
+====================================================================================================
+  TEST DU WORKFLOW DE PROGRESSION PÉDAGOGIQUE
+====================================================================================================
+URL: https://expert-cmck.onrender.com
+Date: 2026-01-19 01:17:26
+Apprenant ID (aléatoire): 3932, Catégorie: Infectiologie
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TEST #1: Première session de la catégorie est de type 'test'
+────────────────────────────────────────────────────────────────────────────────────────────────────
+❌ ÉCHEC: Impossible de démarrer la session: 500 - {"detail":"Une erreur inattendue est survenue: (psycopg2.errors.ForeignKeyViolation) insert or updat
+❌ ÉCHEC: Le test initial a échoué, arrêt du workflow.
+
+====================================================================================================
+  RÉSUMÉ DES TESTS DE PROGRESSION
+====================================================================================================
+Total de tests: 1
+Succès: 0
+Échecs: 2
+Taux de réussite: 0.0%

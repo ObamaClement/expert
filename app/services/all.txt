@@ -1,0 +1,1299 @@
+=== Fichier: ./fultang_integration/extractor.py ===
+
+
+
+=== Fichier: ./fultang_integration/validator.py ===
+
+
+
+=== Fichier: ./fultang_integration/__init__.py ===
+
+
+
+=== Fichier: ./fultang_integration/anonymizer.py ===
+
+
+
+=== Fichier: ./fultang_integration/case_generator.py ===
+
+
+
+=== Fichier: ./simulation_service.py ===
+
+import logging
+from sqlalchemy.orm import Session
+from uuid import UUID
+from typing import Optional
+
+from .. import models
+
+# Obtenir une instance du logger configuré
+logger = logging.getLogger(__name__)
+
+def create_session(
+    db: Session, 
+    learner_id: int, 
+    case_id: int, 
+    session_type: str,
+    formative_count: int = 0
+) -> models.SimulationSession:
+    """
+    Crée un nouvel enregistrement de session de simulation dans la base de données.
+    """
+    logger.info(f"Début de create_session pour learner_id={learner_id}, case_id={case_id}")
+    
+    context = {
+        "session_type": session_type, 
+        "formative_count_since_eval": formative_count,
+        "dialogue": []
+    }
+    logger.info(f"  -> Contexte de session à enregistrer: {context}")
+    
+    db_session = models.SimulationSession(
+        learner_id=learner_id,
+        cas_clinique_id=case_id,
+        statut="in_progress",
+        context_state=context
+    )
+
+    db.add(db_session)
+    db.commit()
+    db.refresh(db_session)
+
+    logger.info(f"  -> Session créée avec succès. ID: {db_session.id}")
+    return db_session
+
+def get_session_by_id(db: Session, session_id: UUID) -> Optional[models.SimulationSession]:
+    """Récupère une session de simulation par son ID."""
+    return db.query(models.SimulationSession).filter(models.SimulationSession.id == session_id).first()
+
+=== Fichier: ./ai_generation_service.py ===
+
+import logging
+import requests
+import json
+from typing import Dict, Any, List, Tuple
+from sqlalchemy.orm import Session, joinedload
+
+from .. import models, schemas
+from ..config import settings
+
+logger = logging.getLogger(__name__)
+
+# Constantes pour l'API OpenRouter
+OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
+# MISE A JOUR: Utilisation d'un modèle plus performant et toujours gratuit si disponible
+MODEL_NAME = "mistralai/mistral-7b-instruct:free"
+
+def _call_openrouter_api(prompt: str) -> Dict[str, Any]:
+    """Fonction de base pour appeler l'API OpenRouter et parser la réponse JSON."""
+    logger.info("Début de l'appel à l'API OpenRouter...")
+    headers = {
+        "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    data = {
+        "model": MODEL_NAME,
+        "messages": [{"role": "user", "content": prompt}],
+        "response_format": {"type": "json_object"},
+    }
+
+    try:
+        response = requests.post(OPENROUTER_API_URL, headers=headers, data=json.dumps(data), timeout=90)
+        response.raise_for_status()
+        response_json = response.json()
+        content_str = response_json['choices'][0]['message']['content']
+        logger.info("Réponse de l'IA reçue et parsée avec succès.")
+        return json.loads(content_str)
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Erreur lors de l'appel à l'API OpenRouter: {e}")
+        # Retourner une structure d'erreur valide pour que le code appelant ne plante pas
+        return {"error": "API call failed", "details": str(e), "score_diagnostic": 0, "score_therapeutique": 0, "score_demarche": 0, "feedback_global": "Erreur de connexion au service d'IA.", "recommendation_next_step": "Veuillez réessayer plus tard."}
+    except (json.JSONDecodeError, KeyError, IndexError) as e:
+        logger.error(f"Erreur lors du parsing de la réponse JSON de l'IA: {e}")
+        return {"error": "Failed to parse AI response", "details": str(e), "score_diagnostic": 0, "score_therapeutique": 0, "score_demarche": 0, "feedback_global": "Erreur lors de l'interprétation de la réponse de l'IA.", "recommendation_next_step": "Veuillez réessayer plus tard."}
+
+def generate_exam_result(case: models.ClinicalCase, session_history: List[str], exam_name: str) -> Dict[str, Any]:
+    """Génère un résultat d'examen plausible en utilisant l'IA."""
+    prompt = f"""
+    ROLE: Tu es un simulateur de laboratoire médical ultra-réaliste.
+    CONTEXTE: Un étudiant en médecine interagit avec un cas clinique simulé. La pathologie réelle du patient est "{case.pathologie_principale.nom_fr}". L'histoire de la maladie est: "{case.presentation_clinique.get('histoire_maladie', 'Non spécifiée')}".
+    HISTORIQUE DES ACTIONS DE L'ÉTUDIANT: {json.dumps(session_history, indent=2)}
+    TACHE: L'étudiant vient de demander l'examen suivant: "{exam_name}".
+    INSTRUCTIONS:
+    1. Génère un résultat réaliste pour cet examen.
+    2. Le résultat doit être COHÉRENT avec la pathologie sous-jacente et l'historique.
+    3. Ne révèle JAMAIS le diagnostic directement. Sois subtil. Si l'examen n'est pas pertinent, le résultat doit être normal.
+    4. Réponds UNIQUEMENT avec un objet JSON. Ne fournis aucun texte avant ou après le JSON.
+    5. Le JSON doit avoir deux clés: "rapport" (une chaîne décrivant les observations brutes) et "conclusion" (une chaîne avec l'interprétation médicale concise).
+    EXEMPLE DE SORTIE: {{"rapport": "Créatinine: 150 µmol/L (Norme: 60-110). Urée: 10 mmol/L (Norme: 2.5-7.5).", "conclusion": "Insuffisance rénale modérée."}}
+    """
+    ai_response = _call_openrouter_api(prompt)
+    return {"rapport": ai_response.get("rapport", "Erreur de génération du rapport."), "conclusion": ai_response.get("conclusion", "Aucune conclusion générée.")}
+
+def generate_hint(case: models.ClinicalCase, session_history: List[str], hint_level: int) -> Tuple[str, str]:
+    """Génère un indice contextuel en utilisant l'IA."""
+    if hint_level == 0: hint_type_instruction = "une question socratique ouverte pour orienter sa réflexion initiale sur l'anamnèse."
+    elif hint_level == 1: hint_type_instruction = "un rappel de cours ou de méthode clinique pertinent par rapport aux informations déjà collectées."
+    elif hint_level == 2: hint_type_instruction = "un indice direct sur une action clé à entreprendre (examen physique ou paraclinique) qu'il n'a pas encore faite."
+    else: hint_type_instruction = "un indice spécifique pointant vers un groupe de diagnostics possibles ou une anomalie clé à ne pas manquer."
+
+    prompt = f"""
+    ROLE: Tu es un tuteur médical pédagogue et bienveillant.
+    CONTEXTE: Un étudiant gère un cas de "{case.pathologie_principale.nom_fr}".
+    HISTORIQUE DES ACTIONS DE L'ÉTUDIANT: {json.dumps(session_history, indent=2)}
+    TACHE: L'étudiant demande de l'aide. Il en est à sa {hint_level + 1}ème demande. Fournis {hint_type_instruction}
+    INSTRUCTIONS:
+    1. L'indice doit être court, utile et ne jamais donner la solution.
+    2. Adapte l'indice à ce que l'étudiant a déjà fait ou n'a pas fait.
+    3. Réponds UNIQUEMENT avec un objet JSON contenant les clés "hint_type" (choisis parmi: "question_socratique", "rappel_de_cours", "indice_direct", "indice_specifique") et "content".
+    """
+    ai_response = _call_openrouter_api(prompt)
+    return ai_response.get("hint_type", "info"), ai_response.get("content", "Erreur lors de la génération de l'indice.")
+
+def evaluate_final_submission(db: Session, case: models.ClinicalCase, submission: schemas.simulation.SubmissionRequest, session_history: list) -> Tuple[schemas.simulation.EvaluationResult, str, str]:
+    """Évalue la soumission finale de l'apprenant en utilisant l'IA et retourne un objet Pydantic."""
+    correct_pathology_name = case.pathologie_principale.nom_fr
+    db_pathology_submitted = db.query(models.Disease).filter(models.Disease.id == submission.diagnosed_pathology_id).first()
+    submitted_pathology_name = db_pathology_submitted.nom_fr if db_pathology_submitted else f"ID Inconnu ({submission.diagnosed_pathology_id})"
+    
+    correct_treatments_raw = db.query(models.TraitementPathologie).options(joinedload(models.TraitementPathologie.medicament)).filter(
+        models.TraitementPathologie.pathologie_id == case.pathologie_principale_id
+    ).all()
+    correct_treatment_names = [t.medicament.nom_commercial or t.medicament.dci for t in correct_treatments_raw] if correct_treatments_raw else ["Aucun traitement spécifique défini"]
+
+    submitted_meds_raw = db.query(models.Medication).filter(models.Medication.id.in_(submission.prescribed_medication_ids)).all()
+    submitted_med_names = [m.nom_commercial or m.dci for m in submitted_meds_raw]
+
+    ### MODIFICATION CLÉ : MISE À JOUR DU PROMPT POUR L'ÉCHELLE DE NOTATION /20 ###
+    prompt = f"""
+    ROLE: Tu es un professeur de médecine expert et juste, chargé d'évaluer la performance d'un étudiant sur une simulation de cas clinique.
+    
+    CONTEXTE DU CAS:
+    - Diagnostic Correct: "{correct_pathology_name}"
+    - Traitements Recommandés (liste informative): {json.dumps(correct_treatment_names)}
+    
+    SOUMISSION DE L'ÉTUDIANT:
+    - Diagnostic Proposé: "{submitted_pathology_name}"
+    - Traitements Prescrits: {json.dumps(submitted_med_names)}
+    - Historique de sa démarche (actions effectuées): {json.dumps(session_history, indent=2)}
+
+    TA MISSION:
+    Évalue la performance et réponds UNIQUEMENT avec un objet JSON.
+    Le JSON doit contenir EXACTEMENT les clés suivantes avec des notes flottantes:
+    1. "score_diagnostic": note sur 10. (10 si exact, 5-7 si proche, 0 sinon).
+    2. "score_therapeutique": note sur 5. (Évalue la pertinence du traitement prescrit PAR RAPPORT AU DIAGNOSTIC CORRECT).
+    3. "score_demarche": note sur 5. (Évalue la logique et la pertinence des examens demandés. Une démarche logique peut avoir des points même si le diagnostic final est faux).
+    4. "feedback_global": Un paragraphe concis de 3-4 phrases (point positif, axe d'amélioration, encouragement).
+    5. "recommendation_next_step": Une phrase courte (choisis parmi: 'reprendre un cas de difficulté similaire', 'passer à un cas de difficulté supérieure', 'revoir les bases de cette catégorie').
+    """
+    
+    ai_response = _call_openrouter_api(prompt)
+    
+    ### MODIFICATION CLÉ : LOGIQUE DE PARSING ROBUSTE ET CRÉATION DE L'OBJET PYDANTIC ###
+    try:
+        score_diag = float(ai_response.get("score_diagnostic", 0.0))
+        score_ther = float(ai_response.get("score_therapeutique", 0.0))
+        score_dem = float(ai_response.get("score_demarche", 0.0))
+        
+        # Calcul du score total sur 20
+        score_total = round(score_diag + score_ther + score_dem, 2)
+        
+    except (ValueError, TypeError) as e:
+        logger.error(f"Erreur de type dans les scores retournés par l'IA: {e}. Scores mis à 0.")
+        score_diag, score_ther, score_dem, score_total = 0.0, 0.0, 0.0, 0.0
+
+    # Création de l'objet Pydantic `EvaluationResult`
+    eval_result = schemas.simulation.EvaluationResult(
+        score_diagnostic=score_diag,
+        score_therapeutique=score_ther,
+        score_demarche=score_dem,
+        score_total=score_total
+    )
+    
+    feedback = ai_response.get("feedback_global", "Erreur lors de la génération du feedback.")
+    recommendation = ai_response.get("recommendation_next_step", "Veuillez réessayer.")
+
+    return eval_result, feedback, recommendation
+
+=== Fichier: ./interaction_log_service.py ===
+
+import logging
+from sqlalchemy.orm import Session
+from uuid import UUID
+from .. import models, schemas
+
+logger = logging.getLogger(__name__)
+
+def create_interaction_log(db: Session, session_id: UUID, action_data: schemas.simulation.LearnerActionRequest) -> models.InteractionLog:
+    session = db.query(models.SimulationSession).filter(models.SimulationSession.id == session_id).first()
+    if not session:
+        logger.error(f"[create_interaction_log] Tentative de log pour une session inexistante: {session_id}")
+        raise ValueError(f"Session {session_id} non trouvée.")
+
+    db_log = models.InteractionLog(
+        session_id=session_id,
+        action_category="EXAMINATION",
+        action_type=action_data.action_type,
+        action_content={
+            "name": action_data.action_name,
+            "justification": action_data.justification or None # Correction pour accepter None
+        }
+    )
+
+    db.add(db_log)
+    db.commit()
+    db.refresh(db_log)
+    return db_log
+
+=== Fichier: ./__init__.py ===
+
+
+
+=== Fichier: ./learning_path_service.py ===
+
+
+
+=== Fichier: ./tutor_service.py ===
+
+import logging
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import desc
+from typing import List, Tuple, Dict, Any, Optional
+from uuid import UUID
+from datetime import datetime
+import random
+
+from .. import models, schemas
+from . import simulation_service, disease_service, interaction_log_service, ai_generation_service
+
+logger = logging.getLogger(__name__)
+
+def _get_learner_history(db: Session, learner_id: int, category: str) -> List[models.SimulationSession]:
+    """Récupère l'historique de l'apprenant pour une catégorie donnée, du plus récent au plus ancien."""
+    logger.info(f"[_get_learner_history] Recherche de l'historique pour learner_id={learner_id}, category='{category}'")
+    history = db.query(models.SimulationSession).join(
+        models.ClinicalCase, models.SimulationSession.cas_clinique_id == models.ClinicalCase.id
+    ).join(
+        models.Disease, models.ClinicalCase.pathologie_principale_id == models.Disease.id
+    ).filter(
+        models.SimulationSession.learner_id == learner_id,
+        models.Disease.categorie == category
+    ).order_by(desc(models.SimulationSession.start_time)).all()
+    logger.info(f"  -> {len(history)} session(s) trouvée(s) au total.")
+    return history
+
+def _select_case_for_activity(db: Session, category: str, session_type: str, last_score: Optional[float], seen_case_ids: List[int], learner_id: int, last_difficulty: int, formative_cases_ids: List[int] = []) -> models.ClinicalCase:
+    """Sélectionne un cas clinique en fonction de la logique pédagogique."""
+    logger.info(f"[_select_case_for_activity] Début de la sélection. Type: '{session_type}', dernier score: {last_score}, dernière difficulté: {last_difficulty}")
+    logger.info(f"  -> IDs des cas déjà vus à exclure: {seen_case_ids}")
+
+    # --- Logique pour Session Sommative ---
+    if session_type == "sommative":
+        if not formative_cases_ids:
+            logger.error("Tentative de session sommative sans cas formatifs préalables !")
+            raise ValueError("Erreur logique: session sommative demandée sans cas formatifs.")
+        case_to_evaluate_id = random.choice(formative_cases_ids)
+        logger.info(f"  -> Mode SOMMATIF: Sélection aléatoire du cas #{case_to_evaluate_id} parmi les cas formatifs {formative_cases_ids}")
+        next_case = db.query(models.ClinicalCase).filter(models.ClinicalCase.id == case_to_evaluate_id).first()
+        if not next_case: raise ValueError(f"Cas {case_to_evaluate_id} pour l'évaluation sommative introuvable.")
+        logger.info(f"    -> ✅ Cas sommatif trouvé: #{next_case.id} (Niveau {next_case.niveau_difficulte})")
+        return next_case
+
+    # --- Logique pour Sessions 'test' ou 'formative' ---
+    query = db.query(models.ClinicalCase).join(
+        models.Disease, models.ClinicalCase.pathologie_principale_id == models.Disease.id
+    ).filter(
+        models.Disease.categorie == category,
+        models.ClinicalCase.id.notin_(seen_case_ids)
+    )
+    
+    difficulty_target = last_difficulty
+    if session_type == "test":
+        logger.info("  -> Mode TEST: Vise une difficulté de départ autour de 10.")
+        difficulty_target = 10
+    elif session_type == "formative":
+        if last_score is not None:
+            if last_score >= 12: # Seuil de réussite sur 20
+                difficulty_target = last_difficulty + 3
+                logger.info(f"  -> Mode FORMATIF (SUCCÈS): Progression -> vise niveau ~{difficulty_target}.")
+            else:
+                difficulty_target = last_difficulty
+                logger.info(f"  -> Mode FORMATIF (ÉCHEC): Stagnation -> vise niveau ~{difficulty_target}.")
+    
+    # Filtrer par difficulté cible
+    query = query.filter(models.ClinicalCase.niveau_difficulte.between(difficulty_target - 2, difficulty_target + 2))
+
+    next_case = query.order_by(models.ClinicalCase.niveau_difficulte.asc()).first()
+    
+    # --- Logique de Fallback si aucun cas n'est trouvé à la difficulté cible ---
+    if not next_case:
+        logger.warning("  -> Aucun cas trouvé avec les filtres stricts. Passage au mode Fallback.")
+        fallback_query = db.query(models.ClinicalCase).join(models.Disease, models.ClinicalCase.pathologie_principale_id == models.Disease.id).filter(
+            models.Disease.categorie == category, models.ClinicalCase.id.notin_(seen_case_ids)
+        )
+        all_available_cases = fallback_query.all()
+        if not all_available_cases:
+            logger.error(f"  -> FALLBACK ÉCHOUÉ: Plus aucun cas non vu dans la catégorie '{category}'.")
+            raise ValueError(f"Plus aucun cas clinique non résolu disponible dans la catégorie '{category}'.")
+
+        # Trouver le cas le plus proche de la difficulté cible
+        next_case = min(all_available_cases, key=lambda x: abs(x.niveau_difficulte - difficulty_target))
+        logger.info(f"    -> Fallback: Cas le plus proche du niveau {difficulty_target} trouvé: #{next_case.id} (Niveau {next_case.niveau_difficulte})")
+
+    logger.info(f"    -> ✅ Cas final sélectionné: #{next_case.id} (Niveau {next_case.niveau_difficulte})")
+    return next_case
+
+def start_new_session(db: Session, learner_id: int, category: str) -> Tuple[models.SimulationSession, models.ClinicalCase, str]:
+    logger.info(f"\n\n================ [START] start_new_session pour learner #{learner_id}, category '{category}' ================")
+    
+    history = _get_learner_history(db, learner_id, category)
+    
+    # --- 1. REPRISE DE SESSION NON TERMINÉE ---
+    last_session = history[0] if history else None
+    if last_session and last_session.statut == "in_progress":
+        logger.info(f"  -> Reprise de la session 'in_progress' existante: {last_session.id}")
+        db.refresh(last_session, ["cas_clinique"])
+        if last_session.cas_clinique: db.refresh(last_session.cas_clinique, ["pathologie_principale"])
+        return last_session, last_session.cas_clinique, last_session.context_state.get("session_type", "formative")
+
+    # --- 2. DÉTERMINATION DU TYPE DE LA NOUVELLE SESSION ---
+    completed_history = [s for s in history if s.statut == "completed"]
+    seen_case_ids = {s.cas_clinique_id for s in history} # Utiliser un set pour performance
+    
+    session_type = "test"
+    last_score = None
+    last_difficulty = 10 # Difficulté de base
+    formative_cases_ids = []
+
+    if not completed_history:
+        logger.info("  -> Logique: Aucun historique complété. Démarrage session 'test'.")
+    else:
+        # Trouver la dernière évaluation (sommative ou test initial)
+        last_eval = next((s for s in completed_history if s.context_state.get("session_type") in ["sommative", "test"]), None)
+        
+        if not last_eval:
+             logger.info("  -> Logique: Sessions complétées mais aucune évaluation. On continue en 'formative'.")
+             session_type = "formative"
+        else:
+            logger.info(f"  -> Logique: Dernière évaluation trouvée: Session ID {last_eval.id}, Score: {last_eval.score_final}, Fin: {last_eval.end_time}")
+            last_eval_case = db.query(models.ClinicalCase).filter_by(id=last_eval.cas_clinique_id).first()
+            last_difficulty = last_eval_case.niveau_difficulte if last_eval_case else 10
+            
+            # Compter les sessions formatives complétées *après* cette dernière évaluation
+            formative_since_last_eval = [s for s in completed_history if s.end_time and s.end_time > last_eval.end_time and s.context_state.get("session_type") == "formative"]
+            logger.info(f"  -> Logique: {len(formative_since_last_eval)} session(s) formative(s) complétée(s) depuis.")
+
+            if len(formative_since_last_eval) >= 3:
+                logger.info("  -> Logique: Cycle de 3 formatives terminé. Passage en 'sommative'.")
+                session_type = "sommative"
+                formative_cases_ids = [s.cas_clinique_id for s in formative_since_last_eval[:3]]
+            else:
+                logger.info("  -> Logique: Cycle formatif en cours. Nouvelle session 'formative'.")
+                session_type = "formative"
+                last_score = last_eval.score_final # Le score de la dernière éval guide la difficulté de la formative
+                
+    # --- 3. SÉLECTION DU CAS CLINIQUE ---
+    next_clinical_case = _select_case_for_activity(db, category, session_type, last_score, list(seen_case_ids), learner_id, last_difficulty, formative_cases_ids)
+    
+    # --- 4. CRÉATION DE LA NOUVELLE SESSION ---
+    new_session = simulation_service.create_session(
+        db=db, learner_id=learner_id, case_id=next_clinical_case.id, session_type=session_type
+    )
+    
+    db.refresh(new_session, ["cas_clinique"])
+    if new_session.cas_clinique: db.refresh(new_session.cas_clinique, ["pathologie_principale"])
+
+    logger.info(f"================ [END] start_new_session, nouvelle session: {new_session.id} (type: {session_type}) ================\n")
+    return new_session, new_session.cas_clinique, session_type
+
+def process_learner_action(db: Session, session_id: UUID, action_data: schemas.simulation.LearnerActionRequest) -> Tuple[Dict[str, Any], str]:
+    """Traite une action de l'apprenant et génère un résultat via l'IA."""
+    interaction_log_service.create_interaction_log(db=db, session_id=session_id, action_data=action_data)
+    session = db.query(models.SimulationSession).options(joinedload(models.SimulationSession.cas_clinique).joinedload(models.ClinicalCase.pathologie_principale)).filter(models.SimulationSession.id == session_id).first()
+    if not session: raise ValueError(f"Session {session_id} non trouvée.")
+    history_logs = db.query(models.InteractionLog).filter(models.InteractionLog.session_id == session_id).order_by(models.InteractionLog.timestamp.asc()).all()
+    session_history = [f"Action: {l.action_content.get('name')}, Justification: {l.action_content.get('justification') or 'N/A'}" for l in history_logs]
+    action_result = ai_generation_service.generate_exam_result(case=session.cas_clinique, session_history=session_history, exam_name=action_data.action_name)
+    return action_result, None # Feedback immédiat non implémenté pour l'instant
+
+def _get_or_create_scaffolding_state(db: Session, session_id: UUID) -> models.TutorScaffoldingState:
+    state = db.query(models.TutorScaffoldingState).filter(models.TutorScaffoldingState.session_id == session_id).first()
+    if not state:
+        state = models.TutorScaffoldingState(session_id=session_id, current_level=0, indices_deja_donnes=[])
+        db.add(state); db.commit(); db.refresh(state)
+    return state
+
+def provide_hint(db: Session, session_id: UUID) -> Tuple[str, str]:
+    """Fournit un indice à l'apprenant en suivant une logique de scaffolding."""
+    state = _get_or_create_scaffolding_state(db, session_id)
+    session = db.query(models.SimulationSession).options(joinedload(models.SimulationSession.cas_clinique).joinedload(models.ClinicalCase.pathologie_principale)).filter(models.SimulationSession.id == session_id).first()
+    if not session: raise ValueError(f"Session {session_id} non trouvée.")
+    history_logs = db.query(models.InteractionLog).filter(models.InteractionLog.session_id == session_id).all()
+    session_history = [f"Action: {l.action_content.get('name')}" for l in history_logs]
+    hint_type, hint_content = ai_generation_service.generate_hint(case=session.cas_clinique, session_history=session_history, hint_level=state.current_level)
+    decision = models.TutorDecision(session_id=session_id, strategy_used="Scaffolding", action_choisie="Fournir un Indice", intervention_content=hint_content, rationale={"reason": "Demande de l'apprenant", "level": state.current_level})
+    db.add(decision)
+    state.current_level += 1
+    db.commit()
+    return hint_type, hint_content
+
+def evaluate_submission(db: Session, session_id: UUID, submission_data: schemas.simulation.SubmissionRequest) -> Tuple[schemas.simulation.EvaluationResult, str, str]:
+    """Évalue la soumission finale de l'apprenant."""
+    logger.info(f"[evaluate_submission] Début de l'évaluation pour la session {session_id}")
+    session = db.query(models.SimulationSession).options(joinedload(models.SimulationSession.cas_clinique).joinedload(models.ClinicalCase.pathologie_principale)).filter(models.SimulationSession.id == session_id).first()
+    if not session: raise ValueError(f"Session {session_id} non trouvée.")
+    if session.statut == "completed": raise ValueError("Cette session a déjà été évaluée.")
+
+    case = session.cas_clinique
+    logs = db.query(models.InteractionLog).filter(models.InteractionLog.session_id == session_id).all()
+    history_for_eval = [{"type": log.action_type, "name": log.action_content.get('name'), "justification": log.action_content.get('justification')} for log in logs]
+    
+    # --- CORRECTION DU BUG ET DE LA LOGIQUE DE NOTATION ---
+    # 1. L'IA retourne un objet Pydantic, pas un dictionnaire.
+    # 2. Le score total de l'IA est sur 20 (10+5+5).
+    # 3. Nous devons enregistrer ce score sur 20 en BDD.
+    
+    eval_result_from_ai, feedback, recommendation = ai_generation_service.evaluate_final_submission(db=db, case=case, submission=submission_data, session_history=history_for_eval)
+    
+    # Accès direct aux attributs de l'objet Pydantic (Correction du bug .get())
+    score_diag = eval_result_from_ai.score_diagnostic
+    score_ther = eval_result_from_ai.score_therapeutique
+    score_dem = eval_result_from_ai.score_demarche
+    
+    # Le score total est déjà sur 20, pas besoin de conversion.
+    score_total_sur_20 = eval_result_from_ai.score_total
+
+    logger.info(f"  -> Scores bruts de l'IA: Diag={score_diag}/10, Thera={score_ther}/5, Demarche={score_dem}/5. Total={score_total_sur_20}/20.")
+
+    # Mettre à jour la session avec le statut et le score correct
+    session.statut = "completed"
+    session.score_final = score_total_sur_20  # On stocke le score sur 20
+    session.end_time = datetime.now()
+    
+    db.commit()
+    logger.info(f"  -> Session {session_id} marquée comme 'completed' avec un score final de {session.score_final}/20.")
+    
+    # Retourner l'objet d'évaluation final
+    return eval_result_from_ai, feedback, recommendation
+
+=== Fichier: ./medication_service.py ===
+
+from sqlalchemy.orm import Session
+from typing import List, Optional
+
+from .. import models, schemas
+
+def get_medication_by_id(db: Session, medication_id: int) -> Optional[models.Medication]:
+    """
+    Récupère un médicament par son ID.
+    """
+    return db.query(models.Medication).filter(models.Medication.id == medication_id).first()
+
+def get_medication_by_dci(db: Session, dci: str) -> Optional[models.Medication]:
+    """
+    Récupère un médicament par son DCI (Dénomination Commune Internationale).
+    """
+    return db.query(models.Medication).filter(models.Medication.dci == dci).first()
+
+def get_all_medications(db: Session, skip: int = 0, limit: int = 100) -> List[models.Medication]:
+    """
+    Récupère une liste de tous les médicaments avec pagination.
+    """
+    return db.query(models.Medication).offset(skip).limit(limit).all()
+
+def create_medication(db: Session, medication: schemas.MedicationCreate) -> models.Medication:
+    """
+    Crée un nouveau médicament dans la base de données.
+    """
+    medication_data = medication.model_dump()
+    db_medication = models.Medication(**medication_data)
+    
+    db.add(db_medication)
+    db.commit()
+    db.refresh(db_medication)
+    
+    return db_medication
+
+def update_medication(db: Session, medication_id: int, medication_update: schemas.MedicationUpdate) -> Optional[models.Medication]:
+    """
+    Met à jour un médicament existant.
+    """
+    db_medication = get_medication_by_id(db, medication_id)
+    if not db_medication:
+        return None
+
+    update_data = medication_update.model_dump(exclude_unset=True)
+    
+    for key, value in update_data.items():
+        setattr(db_medication, key, value)
+        
+    db.commit()
+    db.refresh(db_medication)
+    
+    return db_medication
+
+def delete_medication(db: Session, medication_id: int) -> Optional[models.Medication]:
+    """
+    Supprime un médicament de la base de données.
+    """
+    db_medication = get_medication_by_id(db, medication_id)
+    if not db_medication:
+        return None
+
+    db.delete(db_medication)
+    db.commit()
+    
+    return db_medication
+
+
+
+
+# Contenu à AJOUTER à la fin de app/services/medication_service.py
+
+def get_diseases_treated_by_medication(db: Session, medication_id: int) -> List[models.TraitementPathologie]:
+    """
+    Récupère toutes les pathologies traitées par un médicament.
+    """
+    return db.query(models.TraitementPathologie).filter(models.TraitementPathologie.medicament_id == medication_id).all()
+
+
+def get_symptoms_treated_by_medication(db: Session, medication_id: int) -> List[models.TraitementSymptome]:
+    """
+    Récupère tous les symptômes traités par un médicament.
+    """
+    return db.query(models.TraitementSymptome).filter(models.TraitementSymptome.medicament_id == medication_id).all()
+
+=== Fichier: ./media_service.py ===
+
+import os
+from sqlalchemy.orm import Session
+from typing import List, Optional
+from fastapi import UploadFile
+import cloudinary
+import cloudinary.uploader
+
+from .. import models, schemas
+from ..config import settings
+
+# --- CONFIGURATION CLOUDINARY ---
+# Cette configuration est faite une seule fois au chargement du module.
+# Elle utilise les variables chargées depuis votre fichier .env.
+cloudinary.config(
+    cloud_name = settings.CLOUDINARY_CLOUD_NAME,
+    api_key = settings.CLOUDINARY_API_KEY,
+    api_secret = settings.CLOUDINARY_API_SECRET,
+    secure = True
+)
+
+
+async def save_upload_file_to_cloud(upload_file: UploadFile) -> str:
+    """
+    Fonction utilitaire pour uploader un fichier directement vers Cloudinary
+    et retourner son URL sécurisée.
+    """
+    try:
+        # Lire le contenu du fichier en mémoire
+        content = await upload_file.read()
+        
+        # Envoyer le contenu à Cloudinary
+        upload_result = cloudinary.uploader.upload(
+            content,
+            folder="sti_medical_expert/uploads"  # Dossier de destination sur Cloudinary
+        )
+        
+        # Récupérer l'URL sécurisée (https://...)
+        secure_url = upload_result.get("secure_url")
+        if not secure_url:
+            raise Exception("Échec de l'upload vers Cloudinary, URL non retournée.")
+            
+        return secure_url
+    finally:
+        # Toujours fermer le fichier après lecture
+        await upload_file.close()
+
+
+async def create_image_medicale(
+    db: Session,
+    file: UploadFile,
+    type_examen: str,
+    sous_type: Optional[str] = None,
+    pathologie_id: Optional[int] = None,
+    description: Optional[str] = None
+) -> models.ImageMedicale:
+    """
+    Crée une nouvelle entrée pour une image médicale.
+    1. Sauvegarde le fichier sur Cloudinary.
+    2. Crée l'enregistrement correspondant en base de données avec l'URL cloud.
+    """
+    # 1. Sauvegarder le fichier physique sur le cloud
+    cloud_url = await save_upload_file_to_cloud(file)
+
+    # 2. Créer l'objet SQLAlchemy avec les métadonnées et l'URL cloud
+    db_image = models.ImageMedicale(
+        type_examen=type_examen,
+        sous_type=sous_type,
+        pathologie_id=pathologie_id,
+        description=description,
+        fichier_url=cloud_url, # <-- C'est maintenant l'URL Cloudinary !
+        format_image=file.content_type.split('/')[-1] if file.content_type else None,
+        taille_ko=file.size // 1024 if file.size else None,
+    )
+    
+    db.add(db_image)
+    db.commit()
+    db.refresh(db_image)
+    
+    return db_image
+
+
+def get_image_medicale_by_id(db: Session, image_id: int) -> Optional[models.ImageMedicale]:
+    """
+    Récupère une image médicale par son ID.
+    """
+    return db.query(models.ImageMedicale).filter(models.ImageMedicale.id == image_id).first()
+
+
+def get_all_images_medicales(db: Session, skip: int = 0, limit: int = 100) -> List[models.ImageMedicale]:
+    """
+    Récupère une liste de toutes les images médicales avec pagination.
+    """
+    return db.query(models.ImageMedicale).offset(skip).limit(limit).all()
+
+
+def update_image_medicale_metadata(
+    db: Session,
+    image_id: int,
+    image_update: schemas.ImageMedicaleUpdate
+) -> Optional[models.ImageMedicale]:
+    """
+    Met à jour les métadonnées d'une image médicale existante.
+    """
+    db_image = get_image_medicale_by_id(db, image_id)
+    if not db_image:
+        return None
+
+    update_data = image_update.model_dump(exclude_unset=True)
+    
+    for key, value in update_data.items():
+        setattr(db_image, key, value)
+        
+    db.commit()
+    db.refresh(db_image)
+    
+    return db_image
+
+
+def delete_image_medicale(db: Session, image_id: int) -> Optional[models.ImageMedicale]:
+    """
+    Supprime une image médicale.
+    1. Supprime l'enregistrement de la base de données.
+    2. (Optionnel) Supprime le fichier sur Cloudinary.
+    """
+    db_image = get_image_medicale_by_id(db, image_id)
+    if not db_image:
+        return None
+
+    # Optionnel : Ajouter ici la logique pour supprimer l'image de Cloudinary
+    # via cloudinary.uploader.destroy(...) si vous voulez un nettoyage complet.
+    # Pour l'instant, nous nous contentons de supprimer la référence.
+
+    db.delete(db_image)
+    db.commit()
+    
+    return db_image
+
+=== Fichier: ./symptom_service.py ===
+
+from sqlalchemy.orm import Session
+from typing import List, Optional
+
+from .. import models, schemas
+from ..utils.exceptions import NotFoundException # Nous créerons ce fichier plus tard
+
+
+def get_symptom_by_id(db: Session, symptom_id: int) -> Optional[models.Symptom]:
+    """
+    Récupère un symptôme par son ID.
+    """
+    return db.query(models.Symptom).filter(models.Symptom.id == symptom_id).first()
+
+
+def get_symptom_by_name(db: Session, name: str) -> Optional[models.Symptom]:
+    """
+    Récupère un symptôme par son nom.
+    """
+    return db.query(models.Symptom).filter(models.Symptom.nom == name).first()
+
+
+def get_all_symptoms(db: Session, skip: int = 0, limit: int = 100) -> List[models.Symptom]:
+    """
+    Récupère une liste de tous les symptômes avec pagination.
+    """
+    return db.query(models.Symptom).offset(skip).limit(limit).all()
+
+
+def create_symptom(db: Session, symptom: schemas.SymptomCreate) -> models.Symptom:
+    """
+    Crée un nouveau symptôme dans la base de données.
+    
+    Prend un schéma Pydantic 'SymptomCreate' en entrée, le convertit en
+    modèle SQLAlchemy 'Symptom' et l'ajoute à la base de données.
+    """
+    # Convertit le schéma Pydantic en dictionnaire
+    symptom_data = symptom.model_dump()
+    
+    # Crée une instance du modèle SQLAlchemy
+    db_symptom = models.Symptom(**symptom_data)
+    
+    # Ajoute l'instance à la session de la base de données
+    db.add(db_symptom)
+    # Valide la transaction pour l'écrire en base
+    db.commit()
+    # Rafraîchit l'instance pour obtenir les valeurs générées par la BDD (comme l'ID)
+    db.refresh(db_symptom)
+    
+    return db_symptom
+
+
+def update_symptom(db: Session, symptom_id: int, symptom_update: schemas.SymptomUpdate) -> Optional[models.Symptom]:
+    """
+    Met à jour un symptôme existant.
+    """
+    db_symptom = get_symptom_by_id(db, symptom_id)
+    if not db_symptom:
+        # Plus tard, nous lèverons une exception personnalisée
+        # raise NotFoundException(detail=f"Symptom with id {symptom_id} not found")
+        return None
+
+    # Convertit le schéma Pydantic en dictionnaire, en excluant les valeurs non définies
+    update_data = symptom_update.model_dump(exclude_unset=True)
+    
+    for key, value in update_data.items():
+        setattr(db_symptom, key, value)
+        
+    db.commit()
+    db.refresh(db_symptom)
+    
+    return db_symptom
+
+
+def delete_symptom(db: Session, symptom_id: int) -> Optional[models.Symptom]:
+    """
+    Supprime un symptôme de la base de données.
+    """
+    db_symptom = get_symptom_by_id(db, symptom_id)
+    if not db_symptom:
+        # raise NotFoundException(detail=f"Symptom with id {symptom_id} not found")
+        return None
+
+    db.delete(db_symptom)
+    db.commit()
+    
+    return db_symptom
+
+def get_diseases_for_symptom(db: Session, symptom_id: int) -> List[models.PathologieSymptome]:
+    """
+    Récupère toutes les pathologies associées à un symptôme (diagnostic différentiel).
+    """
+    return db.query(models.PathologieSymptome).filter(models.PathologieSymptome.symptome_id == symptom_id).all()
+
+
+
+
+
+def add_treatment_to_symptom(db: Session, association_data: schemas.relations.TraitementSymptomeCreate) -> models.TraitementSymptome:
+    """
+    Associe un médicament à un symptôme en tant que traitement symptomatique.
+    """
+    db_symptom = get_symptom_by_id(db, symptom_id=association_data.symptome_id)
+    from . import medication_service
+    db_medication = medication_service.get_medication_by_id(db, medication_id=association_data.medicament_id)
+
+    if not db_symptom or not db_medication:
+        raise ValueError("Symptôme ou Médicament non trouvé.")
+
+    association = models.TraitementSymptome(**association_data.model_dump())
+    
+    db.add(association)
+    db.commit()
+    db.refresh(association)
+    
+    return association
+
+
+def get_treatments_for_symptom(db: Session, symptom_id: int) -> List[models.TraitementSymptome]:
+    """
+    Récupère tous les traitements associés à un symptôme.
+    """
+    return db.query(models.TraitementSymptome).filter(models.TraitementSymptome.symptome_id == symptom_id).all()
+
+=== Fichier: ./clinical_case_service.py ===
+
+from sqlalchemy.orm import Session
+from typing import List, Optional
+
+from .. import models, schemas
+
+# Importer les autres services dont nous aurons besoin
+from . import disease_service
+from . import media_service
+
+
+def get_case_by_id(db: Session, case_id: int) -> Optional[models.ClinicalCase]:
+    """
+    Récupère un cas clinique par son ID.
+    """
+    return db.query(models.ClinicalCase).filter(models.ClinicalCase.id == case_id).first()
+
+
+def get_case_by_code(db: Session, code: str) -> Optional[models.ClinicalCase]:
+    """
+    Récupère un cas clinique par son code Fultang ou synthétique.
+    """
+    return db.query(models.ClinicalCase).filter(models.ClinicalCase.code_fultang == code).first()
+
+
+def get_all_cases(db: Session, skip: int = 0, limit: int = 100) -> List[models.ClinicalCase]:
+    """
+    Récupère une liste de tous les cas cliniques avec pagination.
+    """
+    return db.query(models.ClinicalCase).offset(skip).limit(limit).all()
+
+
+def create_case(db: Session, case: schemas.ClinicalCaseCreate) -> models.ClinicalCase:
+    """
+    Crée un nouveau cas clinique dans la base de données.
+    """
+    # Vérifier que la pathologie principale existe, si elle est fournie
+    if case.pathologie_principale_id:
+        db_disease = disease_service.get_disease_by_id(db, disease_id=case.pathologie_principale_id)
+        if not db_disease:
+            raise ValueError(f"La pathologie avec l'ID {case.pathologie_principale_id} n'existe pas.")
+
+    # Vérifier que les images associées existent, si elles sont fournies
+    if case.images_associees_ids:
+        for img_id in case.images_associees_ids:
+            db_image = media_service.get_image_medicale_by_id(db, image_id=img_id)
+            if not db_image:
+                raise ValueError(f"L'image avec l'ID {img_id} n'existe pas.")
+
+    case_data = case.model_dump()
+    db_case = models.ClinicalCase(**case_data)
+    
+    db.add(db_case)
+    db.commit()
+    db.refresh(db_case)
+    
+    return db_case
+
+
+def update_case(db: Session, case_id: int, case_update: schemas.ClinicalCaseUpdate) -> Optional[models.ClinicalCase]:
+    """
+    Met à jour un cas clinique existant.
+    """
+    db_case = get_case_by_id(db, case_id)
+    if not db_case:
+        return None
+
+    update_data = case_update.model_dump(exclude_unset=True)
+    
+    for key, value in update_data.items():
+        setattr(db_case, key, value)
+        
+    db.commit()
+    db.refresh(db_case)
+    
+    return db_case
+
+
+def delete_case(db: Session, case_id: int) -> Optional[models.ClinicalCase]:
+    """
+    Supprime un cas clinique de la base de données.
+    Note : Ne supprime pas les entités associées (maladies, images...).
+    """
+    db_case = get_case_by_id(db, case_id)
+    if not db_case:
+        return None
+
+    db.delete(db_case)
+    db.commit()
+    
+    return db_case
+
+=== Fichier: ./expert_strategy_service.py ===
+
+from sqlalchemy.orm import Session
+from typing import List, Optional
+
+from .. import models, schemas
+
+def get_strategy_by_id(db: Session, strategy_id: int) -> Optional[models.ExpertStrategy]:
+    """
+    Récupère une règle par son ID.
+    """
+    return db.query(models.ExpertStrategy).filter(models.ExpertStrategy.id == strategy_id).first()
+
+def get_strategy_by_code(db: Session, code: str) -> Optional[models.ExpertStrategy]:
+    """
+    Récupère une règle par son code unique.
+    """
+    return db.query(models.ExpertStrategy).filter(models.ExpertStrategy.code_regle == code).first()
+
+def get_all_strategies(db: Session, skip: int = 0, limit: int = 100) -> List[models.ExpertStrategy]:
+    """
+    Récupère une liste de toutes les règles avec pagination.
+    """
+    return db.query(models.ExpertStrategy).offset(skip).limit(limit).all()
+
+def get_active_strategies_by_category(db: Session, category: str) -> List[models.ExpertStrategy]:
+    """
+    Récupère toutes les règles actives pour une catégorie donnée, triées par priorité.
+    Cette fonction sera très utile pour le moteur de raisonnement.
+    """
+    return db.query(models.ExpertStrategy).filter(
+        models.ExpertStrategy.categorie == category,
+        models.ExpertStrategy.est_active == True
+    ).order_by(models.ExpertStrategy.priorite.desc()).all()
+
+
+def create_strategy(db: Session, strategy: schemas.ExpertStrategyCreate) -> models.ExpertStrategy:
+    """
+    Crée une nouvelle règle dans la base de données.
+    """
+    strategy_data = strategy.model_dump()
+    db_strategy = models.ExpertStrategy(**strategy_data)
+    
+    db.add(db_strategy)
+    db.commit()
+    db.refresh(db_strategy)
+    
+    return db_strategy
+
+def update_strategy(db: Session, strategy_id: int, strategy_update: schemas.ExpertStrategyUpdate) -> Optional[models.ExpertStrategy]:
+    """
+    Met à jour une règle existante.
+    """
+    db_strategy = get_strategy_by_id(db, strategy_id)
+    if not db_strategy:
+        return None
+
+    update_data = strategy_update.model_dump(exclude_unset=True)
+    
+    for key, value in update_data.items():
+        setattr(db_strategy, key, value)
+        
+    db.commit()
+    db.refresh(db_strategy)
+    
+    return db_strategy
+
+def delete_strategy(db: Session, strategy_id: int) -> Optional[models.ExpertStrategy]:
+    """
+    Supprime une règle de la base de données.
+    """
+    db_strategy = get_strategy_by_id(db, strategy_id)
+    if not db_strategy:
+        return None
+
+    db.delete(db_strategy)
+    db.commit()
+    
+    return db_strategy
+
+=== Fichier: ./embedding_service.py ===
+
+from sentence_transformers import SentenceTransformer
+import logging
+
+# Configuration du logging
+logger = logging.getLogger(__name__)
+
+class EmbeddingService:
+    """
+    Service pour générer des embeddings (vecteurs) à partir de texte.
+    Utilise le modèle 'all-MiniLM-L6-v2' qui est un excellent compromis
+    rapidité/qualité pour l'anglais et le français technique.
+    """
+    
+    _instance = None
+    _model = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(EmbeddingService, cls).__new__(cls)
+            logger.info("Initialisation du modèle d'embedding...")
+            # Chargement du modèle. On essaie sans le préfixe 'sentence-transformers/'
+            # Si cela échoue encore, nous essaierons une autre approche.
+            try:
+                cls._model = SentenceTransformer('all-MiniLM-L6-v2')
+            except Exception as e:
+                logger.error(f"Erreur chargement modèle 'all-MiniLM-L6-v2': {e}")
+                # Tentative de repli explicite
+                cls._model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+            
+            logger.info("Modèle d'embedding chargé avec succès.")
+        return cls._instance
+
+    def get_text_embedding(self, text: str) -> list:
+        """
+        Génère un vecteur d'embedding pour une chaîne de caractères donnée.
+        
+        :param text: Le texte à vectoriser.
+        :return: Une liste de flottants (le vecteur).
+        """
+        if not text or not isinstance(text, str):
+            return None
+            
+        try:
+            # Le modèle retourne un numpy array, on le convertit en liste simple
+            # pour qu'il soit compatible avec pgvector et JSON.
+            embedding = self._model.encode(text)
+            return embedding.tolist()
+        except Exception as e:
+            logger.error(f"Erreur lors de la vectorisation du texte : {e}")
+            return None
+
+# Instance globale prête à l'emploi
+embedding_service = EmbeddingService()
+
+=== Fichier: ./chat_service.py ===
+
+from sqlalchemy.orm import Session
+from typing import List, Optional
+from uuid import UUID
+
+from .. import models, schemas
+
+
+def create_chat_message(db: Session, session_id: UUID, message: schemas.ChatMessageCreate) -> models.ChatMessage:
+    """
+    Crée un nouveau message de chat et l'associe à une session.
+    
+    :param db: Session de base de données.
+    :param session_id: L'ID de la session de simulation à laquelle le message appartient.
+    :param message: Le schéma Pydantic contenant les données du message.
+    :return: L'objet ChatMessage créé.
+    """
+    # Vérifier que la session parente existe pour garantir l'intégrité
+    session = db.query(models.SimulationSession).filter(models.SimulationSession.id == session_id).first()
+    if not session:
+        raise ValueError(f"La session avec l'ID {session_id} n'a pas été trouvée.")
+
+    # Créer l'instance du modèle SQLAlchemy
+    db_message = models.ChatMessage(
+        **message.model_dump(),
+        session_id=session_id
+    )
+    
+    db.add(db_message)
+    db.commit()
+    db.refresh(db_message)
+    
+    return db_message
+
+
+def get_messages_by_session(db: Session, session_id: UUID) -> List[models.ChatMessage]:
+    """
+    Récupère tous les messages d'une session de simulation, triés par ordre chronologique.
+    
+    :param db: Session de base de données.
+    :param session_id: L'ID de la session à interroger.
+    :return: Une liste d'objets ChatMessage.
+    """
+    return db.query(models.ChatMessage).filter(
+        models.ChatMessage.session_id == session_id
+    ).order_by(models.ChatMessage.timestamp.asc()).all()
+
+=== Fichier: ./diagnostic_engine.py ===
+
+from sqlalchemy.orm import Session
+from typing import List, Dict, Any, Optional
+
+from .. import models
+from ..core import reasoning_engine
+from . import expert_strategy_service
+
+# Pour le typage, nous pouvons définir un schéma simple ici
+from pydantic import BaseModel
+
+class DiagnosticInput(BaseModel):
+    """
+    Schéma simple pour les données d'entrée du moteur de diagnostic.
+    """
+    symptoms: List[str]
+    context: List[str] = []
+    age: Optional[int] = None
+    # ... d'autres faits pertinents pourraient être ajoutés ici
+
+
+def run_diagnostic(db: Session, patient_facts: DiagnosticInput) -> List[Dict[str, Any]]:
+    """
+    Orchestre le processus de diagnostic.
+
+    1. Récupère les règles de diagnostic actives depuis la base de données.
+    2. Formate les faits du patient.
+    3. Appelle le moteur de raisonnement.
+    4. Retourne les actions/conclusions.
+    """
+    # 1. Récupérer les règles
+    # On utilise la fonction 'intelligente' que nous avions créée dans le service des stratégies
+    diagnostic_rules_db = expert_strategy_service.get_active_strategies_by_category(
+        db, category="DIAGNOSTIC"
+    )
+
+    if not diagnostic_rules_db:
+        return []
+
+    # Convertir les objets SQLAlchemy en dictionnaires simples pour le moteur de logique pure
+    rules_list = [
+        {
+            "code_regle": rule.code_regle,
+            "conditions": rule.conditions,
+            "actions": rule.actions,
+        }
+        for rule in diagnostic_rules_db
+    ]
+
+    # 2. Formater les faits (déjà au bon format grâce à Pydantic)
+    facts_dict = patient_facts.model_dump()
+
+    # 3. Appeler le moteur de raisonnement
+    conclusions = reasoning_engine.forward_chaining_engine(
+        rules=rules_list,
+        facts=facts_dict
+    )
+
+    # 4. Retourner les conclusions
+    return conclusions
+
+=== Fichier: ./q_matrix_service.py ===
+
+
+
+=== Fichier: ./disease_service.py ===
+
+from sqlalchemy.orm import Session
+from typing import List, Optional
+
+from .. import models, schemas
+
+def get_disease_by_id(db: Session, disease_id: int) -> Optional[models.Disease]:
+    """
+    Récupère une pathologie par son ID.
+    """
+    return db.query(models.Disease).filter(models.Disease.id == disease_id).first()
+
+def get_disease_by_icd10(db: Session, icd10_code: str) -> Optional[models.Disease]:
+    """
+    Récupère une pathologie par son code CIM-10.
+    """
+    return db.query(models.Disease).filter(models.Disease.code_icd10 == icd10_code).first()
+
+def get_all_diseases(db: Session, skip: int = 0, limit: int = 100) -> List[models.Disease]:
+    """
+    Récupère une liste de toutes les pathologies avec pagination.
+    """
+    return db.query(models.Disease).offset(skip).limit(limit).all()
+
+def create_disease(db: Session, disease: schemas.DiseaseCreate) -> models.Disease:
+    """
+    Crée une nouvelle pathologie dans la base de données.
+    """
+    disease_data = disease.model_dump()
+    db_disease = models.Disease(**disease_data)
+    
+    db.add(db_disease)
+    db.commit()
+    db.refresh(db_disease)
+    
+    return db_disease
+
+def update_disease(db: Session, disease_id: int, disease_update: schemas.DiseaseUpdate) -> Optional[models.Disease]:
+    """
+    Met à jour une pathologie existante.
+    """
+    db_disease = get_disease_by_id(db, disease_id)
+    if not db_disease:
+        return None
+
+    update_data = disease_update.model_dump(exclude_unset=True)
+    
+    for key, value in update_data.items():
+        setattr(db_disease, key, value)
+        
+    db.commit()
+    db.refresh(db_disease)
+    
+    return db_disease
+
+def delete_disease(db: Session, disease_id: int) -> Optional[models.Disease]:
+    """
+    Supprime une pathologie de la base de données.
+    """
+    db_disease = get_disease_by_id(db, disease_id)
+    if not db_disease:
+        return None
+
+    db.delete(db_disease)
+    db.commit()
+    
+    return db_disease
+
+def add_symptom_to_disease(db: Session, association_data: schemas.relations.PathologieSymptomeCreate) -> models.PathologieSymptome:
+    """
+    Associe un symptôme à une pathologie avec des attributs de relation.
+    """
+    # Vérifier que la pathologie et le symptôme existent
+    db_disease = get_disease_by_id(db, disease_id=association_data.pathologie_id)
+    # Nous aurons besoin d'importer le symptom_service pour cette vérification
+    from . import symptom_service
+    db_symptom = symptom_service.get_symptom_by_id(db, symptom_id=association_data.symptome_id)
+
+    if not db_disease or not db_symptom:
+        # Idéalement, lever une exception plus spécifique
+        raise ValueError("Pathologie ou Symptôme non trouvé.")
+
+    # Créer l'objet d'association
+    association = models.PathologieSymptome(**association_data.model_dump())
+    
+    db.add(association)
+    db.commit()
+    db.refresh(association)
+    
+    return association
+
+
+def get_symptoms_for_disease(db: Session, disease_id: int) -> List[models.PathologieSymptome]:
+    """
+    Récupère tous les symptômes associés à une pathologie, avec les détails de la relation.
+    """
+    return db.query(models.PathologieSymptome).filter(models.PathologieSymptome.pathologie_id == disease_id).all()
+
+
+def add_treatment_to_disease(db: Session, association_data: schemas.relations.TraitementPathologieCreate) -> models.TraitementPathologie:
+    """
+    Associe un médicament à une pathologie en tant que traitement.
+    """
+    db_disease = get_disease_by_id(db, disease_id=association_data.pathologie_id)
+    from . import medication_service
+    db_medication = medication_service.get_medication_by_id(db, medication_id=association_data.medicament_id)
+
+    if not db_disease or not db_medication:
+        raise ValueError("Pathologie ou Médicament non trouvé.")
+
+    association = models.TraitementPathologie(**association_data.model_dump())
+    
+    db.add(association)
+    db.commit()
+    db.refresh(association)
+    
+    return association
+
+
+def get_treatments_for_disease(db: Session, disease_id: int) -> List[models.TraitementPathologie]:
+    """
+    Récupère tous les traitements associés à une pathologie.
+    """
+    return db.query(models.TraitementPathologie).filter(models.TraitementPathologie.pathologie_id == disease_id).all()
+

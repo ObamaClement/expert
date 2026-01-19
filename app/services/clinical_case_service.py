@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import List, Optional
+import random
 
 from .. import models, schemas
 
@@ -27,6 +29,56 @@ def get_all_cases(db: Session, skip: int = 0, limit: int = 100) -> List[models.C
     Récupère une liste de tous les cas cliniques avec pagination.
     """
     return db.query(models.ClinicalCase).offset(skip).limit(limit).all()
+
+
+def get_case_for_progression(
+    db: Session, 
+    category: str, 
+    target_difficulty: int, 
+    exclude_case_ids: List[int]
+) -> Optional[models.ClinicalCase]:
+    """
+    Trouve un cas clinique adapté à la progression de l'apprenant.
+    Cherche un cas dans la catégorie donnée, proche du niveau de difficulté cible,
+    en excluant ceux déjà réalisés.
+    
+    Logique de recherche :
+    1. Cherche exact ou +/- 1 niveau.
+    2. Si rien, élargit à +/- 3 niveaux.
+    3. Si rien, prend n'importe quel cas de la catégorie non fait.
+    """
+    base_query = db.query(models.ClinicalCase).join(
+        models.Disease, models.ClinicalCase.pathologie_principale_id == models.Disease.id
+    ).filter(
+        models.Disease.categorie == category,
+        models.ClinicalCase.id.notin_(exclude_case_ids)
+    )
+
+    # 1. Recherche stricte (Cible +/- 1)
+    strict_candidates = base_query.filter(
+        models.ClinicalCase.niveau_difficulte.between(target_difficulty - 1, target_difficulty + 1)
+    ).all()
+
+    if strict_candidates:
+        return random.choice(strict_candidates)
+
+    # 2. Recherche élargie (Cible +/- 3)
+    wide_candidates = base_query.filter(
+        models.ClinicalCase.niveau_difficulte.between(target_difficulty - 3, target_difficulty + 3)
+    ).all()
+
+    if wide_candidates:
+        # On prend celui qui est le plus proche du niveau cible
+        return min(wide_candidates, key=lambda c: abs(c.niveau_difficulte - target_difficulty))
+
+    # 3. Fallback (N'importe quel cas de la catégorie non fait)
+    fallback_candidates = base_query.all()
+    
+    if fallback_candidates:
+        # On prend le plus proche disponible, même s'il est loin
+        return min(fallback_candidates, key=lambda c: abs(c.niveau_difficulte - target_difficulty))
+
+    return None
 
 
 def create_case(db: Session, case: schemas.ClinicalCaseCreate) -> models.ClinicalCase:
