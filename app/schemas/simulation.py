@@ -250,6 +250,35 @@ class SubmissionResponse(BaseModel):
     session_duration_seconds: Optional[int] = None
     virtual_cost_total: Optional[int] = None
 
+
+
+
+
+
+
+
+class SessionHistoryItem(BaseModel):
+    """Détail d'une session unique dans l'historique."""
+    session_id: UUID
+    date: datetime
+    etat: str  # en_cours, completed, etc.
+    note: Optional[float] = None
+    cas_titre: str # Nom de la pathologie ou code du cas pour référence
+
+class CategoryHistoryGroup(BaseModel):
+    """Groupe de sessions pour une catégorie spécifique."""
+    categorie: str
+    sessions: List[SessionHistoryItem]
+    moyenne_categorie: Optional[float] = None # Bonus : moyenne dans cette matière
+    progression_percentage: float = Field(..., description="Pourcentage d'avancement (Cas uniques faits / Total cas dispos)")
+    cases_realises_count: int = Field(..., description="Nombre de cas uniques réalisés par l'apprenant")
+    cases_total_count: int = Field(..., description="Nombre total de cas disponibles dans cette catégorie")
+
+class LearnerDetailedHistoryResponse(BaseModel):
+    """Réponse racine."""
+    learner_id: int
+    historique_par_categorie: List[CategoryHistoryGroup]
+
 # ==============================================================================
 # 5. SCHÉMAS DE CHAT (Rappel pour complétude)
 # ==============================================================================

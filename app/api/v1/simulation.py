@@ -282,3 +282,38 @@ def submit_final_diagnosis(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Erreur lors de l'évaluation: {str(e)}"
         )
+    
+
+@router.get(
+    "/learners/{learner_id}/history",
+    response_model=schemas.simulation.LearnerDetailedHistoryResponse,
+    summary="Obtenir l'historique détaillé par catégorie"
+)
+def get_learner_detailed_history(
+    learner_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Renvoie l'historique complet des sessions de l'apprenant, regroupé par spécialité médicale (catégorie).
+    
+    Structure de retour :
+    - learner_id
+    - historique_par_categorie: [
+        {
+            "categorie": "Cardiologie",
+            "moyenne_categorie": 14.5,
+            "sessions": [ ...liste des sessions... ]
+        },
+        ...
+    ]
+    """
+    try:
+        return tutor_service.get_learner_history_by_category(db=db, learner_id=learner_id)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        logger.error(f"Erreur historique apprenant: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Erreur lors de la génération de l'historique."
+        )

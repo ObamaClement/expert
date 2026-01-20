@@ -1,5 +1,6 @@
 #=== Fichier: ./app/services/tutor_service.py ===
 
+from collections import defaultdict
 import logging
 import json
 import time
@@ -462,3 +463,134 @@ def evaluate_submission(
         import traceback
         logger.error(traceback.format_exc())
         raise e
+    
+
+
+def get_learner_history_by_category(db: Session, learner_id: int) -> schemas.simulation.LearnerDetailedHistoryResponse:
+    """
+    Récupère tout l'historique d'un apprenant, groupé par catégorie,
+    AVEC le calcul du pourcentage de progression par rapport au catalogue total.
+    """
+    trace_id = f"HIST-{learner_id}"
+    logger.info(f"📊 [HISTORY] Calcul progression détaillée pour Learner {learner_id}", extra={'trace_id': trace_id})
+
+    # 1. Vérifier l'apprenant
+    learner = db.query(models.Learner).filter(models.Learner.id == learner_id).first()
+    if not learner:
+        raise ValueError(f"Apprenant {learner_id} introuvable.")
+
+    # -------------------------------------------------------------------------
+    # PARTIE A : Récupérer le CATALOGUE TOTAL (Dénominateur)
+    # -------------------------------------------------------------------------
+    # On veut : { "Cardiologie": 15, "Pneumologie": 10, ... }
+    # Requête optimisée : Group By SQL
+    logger.debug("   [HISTORY] Comptage des cas disponibles par catégorie...", extra={'trace_id': trace_id})
+    
+    total_cases_query = db.query(
+        models.Disease.categorie, 
+        func.count(models.ClinicalCase.id)
+    ).join(
+        models.ClinicalCase, models.ClinicalCase.pathologie_principale_id == models.Disease.id
+    ).group_by(
+        models.Disease.categorie
+    ).all()
+
+    # Transformation en dictionnaire pour accès rapide
+    # Ex: total_map = {'Cardiologie': 12, 'Infectiologie': 8}
+    total_map = {row[0]: row[1] for row in total_cases_query if row[0]}
+    
+    logger.debug(f"   [HISTORY] Catalogue chargé : {total_map}", extra={'trace_id': trace_id})
+
+    # -------------------------------------------------------------------------
+    # PARTIE B : Récupérer l'HISTORIQUE APPRENANT (Numérateur + Détails)
+    # -------------------------------------------------------------------------
+    results = db.query(models.SimulationSession).join(
+        models.ClinicalCase, models.SimulationSession.cas_clinique_id == models.ClinicalCase.id
+    ).join(
+        models.Disease, models.ClinicalCase.pathologie_principale_id == models.Disease.id
+    ).filter(
+        models.SimulationSession.learner_id == learner_id
+    ).order_by(
+        models.SimulationSession.start_time.desc()
+    ).all()
+
+    # -------------------------------------------------------------------------
+    # PARTIE C : Regroupement et Calculs
+    # -------------------------------------------------------------------------
+    grouped_sessions = defaultdict(list)
+    unique_cases_done_by_cat = defaultdict(set) # Pour compter les cas uniques (pas les tentatives)
+
+    for session in results:
+        # Identification Catégorie
+        if session.cas_clinique and session.cas_clinique.pathologie_principale:
+            cat_name = session.cas_clinique.pathologie_principale.categorie or "Non catégorisé"
+            cas_name = session.cas_clinique.pathologie_principale.nom_fr
+            # On stocke l'ID du cas pour le comptage unique
+            unique_cases_done_by_cat[cat_name].add(session.cas_clinique.id)
+        else:
+            cat_name = "Inconnu"
+            cas_name = "Cas sans pathologie liée"
+
+        # Création objet session
+        item = schemas.simulation.SessionHistoryItem(
+            session_id=session.id,
+            date=session.start_time,
+            etat=session.statut,
+            note=session.score_final,
+            cas_titre=cas_name
+        )
+        grouped_sessions[cat_name].append(item)
+
+    # -------------------------------------------------------------------------
+    # PARTIE D : Construction Réponse Finale
+    # -------------------------------------------------------------------------
+    final_list = []
+    
+    # On itère sur toutes les catégories trouvées dans l'historique
+    # (Note: Si l'étudiant n'a rien fait dans une catégorie, elle n'apparait pas ici. 
+    # Si vous voulez afficher TOUTES les catégories même vides, il faut itérer sur total_map)
+    
+    all_categories = set(grouped_sessions.keys()).union(set(total_map.keys()))
+    
+    for category in all_categories:
+        sessions = grouped_sessions.get(category, [])
+        
+        # 1. Calcul Moyenne
+        scores = [s.note for s in sessions if s.note is not None]
+        avg = sum(scores) / len(scores) if scores else None
+        
+        # 2. Calcul Progression
+        # Nombre de cas uniques réalisés par l'étudiant
+        nb_done_unique = len(unique_cases_done_by_cat.get(category, []))
+        
+        # Nombre total disponible dans la base
+        nb_total_available = total_map.get(category, 0)
+        
+        # Pourcentage (Protection division par zéro)
+        if nb_total_available > 0:
+            percentage = (nb_done_unique / nb_total_available) * 100.0
+            # On cap à 100% (au cas où des cas auraient été supprimés mais restent dans l'historique)
+            percentage = min(100.0, percentage)
+        else:
+            percentage = 0.0
+
+        group = schemas.simulation.CategoryHistoryGroup(
+            categorie=category,
+            sessions=sessions,
+            moyenne_categorie=round(avg, 2) if avg else None,
+            # Nouveaux champs
+            progression_percentage=round(percentage, 1),
+            cases_realises_count=nb_done_unique,
+            cases_total_count=nb_total_available
+        )
+        final_list.append(group)
+
+    # Tri alphabétique
+    final_list.sort(key=lambda x: x.categorie)
+
+    logger.info(f"   ✅ [HISTORY] Rapport généré pour {len(final_list)} catégories.", extra={'trace_id': trace_id})
+
+    return schemas.simulation.LearnerDetailedHistoryResponse(
+        learner_id=learner_id,
+        historique_par_categorie=final_list
+    )

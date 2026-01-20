@@ -15,6 +15,9 @@ from .. import models, schemas
 from ..config import settings
 from ..core.prompts.exam_prompts import exam_prompt_builder
 
+from ..core.prompts.tutor_prompts import tutor_prompt_builder
+from ..schemas import TutorFeedback  # Pour la validation stricte Pydantic
+
 # ==============================================================================
 # CONFIGURATION DU LOGGER "AI-KERNEL" (Niveau Expert / Debugging)
 # ==============================================================================
@@ -53,6 +56,7 @@ class AiTaskType(Enum):
     EXAM_GENERATION = "EXAM_GENERATION"
     EVALUATION = "EVALUATION"
     HINT_GENERATION = "HINT_GENERATION"
+    TUTOR_ANALYSIS = "TUTOR_ANALYSIS"
 
 # ==============================================================================
 # UTILITAIRES DE NETTOYAGE ET VALIDATION
@@ -581,3 +585,136 @@ Donne un indice pédagogique JSON : {{ "hint_type": "...", "content": "..." }}
     if isinstance(res, dict):
         return res.get("hint_type", "info"), res.get("content", "Analysez les symptômes.")
     return "info", "Continuez."
+
+
+
+
+
+
+
+
+
+def generate_pedagogical_feedback(
+    case: models.ClinicalCase,
+    student_msg: str,
+    patient_msg: str,
+    chat_history_count: int
+) -> Dict[str, Any]:
+    """
+    Génère une analyse pédagogique (Feedback Tuteur) en temps réel.
+    
+    CETTE FONCTION EST CRITIQUE POUR L'EXPÉRIENCE D'APPRENTISSAGE.
+    Elle agit comme un "Méta-Cerveau" qui observe la conversation.
+    
+    ALGORITHME :
+    1. Contextualisation : Récupère la vérité terrain du cas (Pathologie, Histoire).
+    2. Prompting : Construit un prompt pédagogique via TutorPromptBuilder.
+    3. Inférence : Appelle le LLM en mode JSON strict.
+    4. Validation : Vérifie que le JSON correspond au schéma TutorFeedback.
+    5. Sécurisation : En cas d'échec, retourne une structure vide pour ne pas casser l'UI.
+    
+    :param case: Le modèle SQLAlchemy du cas clinique (Vérité Terrain).
+    :param student_msg: La dernière question posée par l'étudiant.
+    :param patient_msg: La réponse générée par le Patient Actor.
+    :param chat_history_count: Nombre de messages précédents (pour estimer la phase).
+    :return: Un dictionnaire validé contenant {chronology_check, interpretation_guide, better_question}.
+    """
+    # ID de traçabilité unique pour suivre cette analyse précise dans les logs serveurs
+    analysis_id = f"TUTOR-{str(uuid.uuid4())[:8].upper()}"
+    start_time = time.time()
+    
+    logger.info(f"🎓 [{analysis_id}] DÉMARRAGE ANALYSE PÉDAGOGIQUE")
+    logger.debug(f"   [{analysis_id}] Contexte : {chat_history_count} messages précédents.")
+    
+    # --- PHASE 1 : SANITY CHECK (Vérification des entrées) ---
+    if not student_msg or not patient_msg:
+        logger.warning(f"   ⚠️ [{analysis_id}] Annulation : Message étudiant ou patient vide.")
+        return {}
+
+    # Nettoyage préventif des inputs pour les logs
+    s_preview = student_msg[:50].replace('\n', ' ') + "..." if len(student_msg) > 50 else student_msg
+    p_preview = patient_msg[:50].replace('\n', ' ') + "..." if len(patient_msg) > 50 else patient_msg
+    
+    logger.debug(f"   [{analysis_id}] Input Student : '{s_preview}'")
+    logger.debug(f"   [{analysis_id}] Input Patient : '{p_preview}'")
+
+    try:
+        # --- PHASE 2 : PRÉPARATION DES DONNÉES (Extraction Sécurisée) ---
+        # On extrait les données brutes du modèle SQLAlchemy pour éviter les erreurs de sérialisation
+        logger.debug(f"   [{analysis_id}] Extraction de la vérité terrain du cas ID {case.id}...")
+        
+        case_data_safe = {
+            "pathologie_principale": {
+                "nom_fr": case.pathologie_principale.nom_fr if case.pathologie_principale else "Pathologie Inconnue"
+            },
+            "presentation_clinique": case.presentation_clinique or {}
+        }
+        
+        # --- PHASE 3 : CONSTRUCTION DU PROMPT (Ingénierie) ---
+        logger.debug(f"   [{analysis_id}] Appel au TutorPromptBuilder...")
+        
+        prompt = tutor_prompt_builder.build_feedback_prompt(
+            case_data=case_data_safe,
+            student_msg=student_msg,
+            patient_msg=patient_msg,
+            chat_history_count=chat_history_count
+        )
+        
+        # Log de la taille du prompt pour surveiller les coûts tokens
+        logger.debug(f"   [{analysis_id}] Prompt généré. Taille : {len(prompt)} caractères.")
+
+        # --- PHASE 4 : APPEL LLM (Inférence) ---
+        logger.info(f"   🚀 [{analysis_id}] Envoi requête IA (Mode: Tuteur)...")
+        
+        # On utilise une température faible (0.1 ou 0.2) car on veut une analyse rigoureuse, pas créative.
+        raw_result = _call_openrouter_api(
+            input_data=prompt,
+            json_mode=True,  # CRUCIAL : Force le modèle à sortir du JSON
+            temperature=0.2,
+            task_type=AiTaskType.TUTOR_ANALYSIS,
+            max_tokens=600   # Pas besoin de plus pour 3 paragraphes
+        )
+
+        # --- PHASE 5 : VALIDATION ET PARSING (La "Douane") ---
+        # Si raw_result est déjà un dict (grâce au parsing interne de _call_openrouter_api)
+        if isinstance(raw_result, dict):
+            logger.debug(f"   [{analysis_id}] JSON reçu. Validation du schéma Pydantic...")
+            
+            try:
+                # Validation stricte via le schéma défini en Phase 2
+                validated_feedback = TutorFeedback(**raw_result)
+                
+                # Conversion en dict standard pour le stockage JSONB
+                final_output = validated_feedback.model_dump()
+                
+                # Logs de succès avec aperçu du contenu pédagogique
+                logger.info(f"   ✅ [{analysis_id}] Feedback validé et structuré.")
+                logger.debug(f"      - Chrono : {final_output['chronology_check']}")
+                logger.debug(f"      - Guide  : {final_output['interpretation_guide'][:50]}...")
+                
+                duration = time.time() - start_time
+                logger.info(f"   🏁 [{analysis_id}] TERMINÉ en {duration:.3f}s")
+                
+                return final_output
+
+            except Exception as validation_err:
+                logger.error(f"   ❌ [{analysis_id}] ÉCHEC VALIDATION PYDANTIC : {validation_err}")
+                logger.error(f"      Données reçues : {json.dumps(raw_result)}")
+                # On ne retourne pas de feedback corrompu
+                return {}
+        
+        else:
+            # Si ce n'est pas un dict (cas d'erreur rare ou fallback texte)
+            logger.warning(f"   ⚠️ [{analysis_id}] Format de réponse inattendu (pas un dict). Type: {type(raw_result)}")
+            return {}
+
+    except Exception as e:
+        # --- PHASE 6 : FILET DE SÉCURITÉ (Catch-All) ---
+        # On capture absolument tout pour ne pas faire planter la boucle de chat
+        logger.critical(f"   🔥 [{analysis_id}] CRASH CRITIQUE DANS TUTOR ANALYSIS : {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        
+        # On retourne un dictionnaire vide.
+        # Le frontend saura que s'il n'y a pas de métadonnées tuteur, il n'affiche pas la bulle.
+        return {}

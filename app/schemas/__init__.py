@@ -26,7 +26,7 @@ from .expert_strategy import ExpertStrategyCreate, ExpertStrategyBase, ExpertStr
 # Cette ligne importe les classes `ChatMessage` et `ChatMessageCreate` depuis le
 # fichier `chat_message.py`. Sans cela, l'erreur `AttributeError: module 'app.schemas'
 # has no attribute 'ChatMessageCreate'` se produit.
-from .chat_message import ChatMessage, ChatMessageCreate
+from .chat_message import ChatMessage, ChatMessageCreate,TutorFeedback
 
 # 2. IMPORTATION DES MODULES COMPLETS
 # Pour les schémas complexes comme 'relations' et 'simulation', il est souvent
@@ -48,3 +48,6 @@ from . import simulation
 # Pydantic dont elle a besoin, que ce soit par import direct de classe
 # (ex: schemas.Symptom) ou par import de module (ex: schemas.simulation.HintResponse).
 # ==============================================================================
+
+
+    
